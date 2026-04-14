@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title id="titulo_grafica">Gráfica del Torneo</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- TU CSS -->
+    <link rel="stylesheet" href="../CSS/styles.css?v=4">
+</head>
+
+<body id="cuerpo_grafica">
+
+<header id="header_grafica" class="p-3">
+
+    <div id="barra_grafica" class="d-flex justify-content-between align-items-center">
+
+        <div id="btn_volver_grafica">←</div>
+
+        <h2 id="titulo_grafica_texto">Gráfica del Torneo</h2>
+
+        <div id="btn_config_grafica">⚙</div>
+
+    </div>
+
+</header>
+
+<main id="main_grafica" class="container py-3">
+
+
+    <!-- PROXIMOS PARTIDOS -->
+    <section id="proximos_partidos">
+
+        <h5 id="titulo_proximos">PRÓXIMOS ENCUENTROS</h5>
+
+        <section id="partido_1" class="match-card mb-4">
+
+            <div class="estado-badge pendiente">Pendiente</div>
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div class="team-box" id="equipo_local_1">
+                    Titanes
+                </div>
+
+                <div class="vs-box">
+                    VS <br>
+                    <small>18:00</small>
+                </div>
+
+                <div class="team-box" id="equipo_visitante_1">
+                    Dragones
+                </div>
+
+            </div>
+
+            <button id="btn_iniciar_1" class="btn-main w-100 mt-3">
+                INICIAR PARTIDO
+            </button>
+
+        </section>
+
+    </section>
+
+    <!-- RESULTADOS -->
+    <section id="resultados_partidos">
+
+        <h5 id="titulo_resultados">RESULTADOS RECIENTES</h5>
+
+        <!-- PARTIDO FINALIZADO -->
+        <section id="resultado_1" class="match-card mb-3">
+
+            <div class="estado-badge finalizado">Finalizado</div>
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div class="team-box ganador">
+                    Lobos <br>
+                    <strong>68</strong>
+                </div>
+
+                <div class="vs-box">
+                    VS
+                </div>
+
+                <div class="team-box perdedor">
+                    Águilas <br>
+                    <strong>55</strong>
+                </div>
+
+            </div>
+
+            <button id="btn_stats_1" class="btn btn-outline-light w-100 mt-3 ">
+                VER ESTADÍSTICAS
+            </button>
+
+        </section>
+
+        <!-- PARTIDO FINALIZADO 2 -->
+        <section id="resultado_2" class="match-card mb-3">
+
+            <div class="estado-badge finalizado">Finalizado</div>
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div class="team-box perdedor">
+                    Galgos <br>
+                    <strong>72</strong>
+                </div>
+
+                <div class="vs-box">
+                    VS
+                </div>
+
+                <div class="team-box ganador">
+                    Panteras <br>
+                    <strong>84</strong>
+                </div>
+
+            </div>
+
+            <button type="button" class="btn btn-outline-light w-100 mt-3 ">
+                VER ESTADISTICAS
+            </button>
+
+        </section>
+
+    </section>
+
+</main>
+
+<!-- NAVBAR APP -->
+<footer id="nav_app" class="d-flex justify-content-around align-items-center">
+
+    <div id="nav_grafica" class="nav-item active">
+        GRÁFICA
+    </div>
+
+    <div id="nav_stats" class="nav-item">
+        ESTADÍSTICAS
+    </div>
+
+    <div id="nav_ranking" class="nav-item">
+        RANKING
+    </div>
+
+</footer>
+
+</body>
+</html>

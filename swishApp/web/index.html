@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es" id="html_root">
+
+<head id="head_main">
+    <meta charset="UTF-8" id="meta_charset">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="meta_viewport">
+    <title id="title_page">Swish app - Torneo</title>
+
+    <!-- Bootstrap -->
+    <link id="bootstrap_css"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet" href="CSS/styles.css">
+</head>
+
+<body id="body_app">
+
+    <!-- HEADER -->
+    <header id="header_main" class="text-center py-5 bg-light">
+        <h1 id="titulo_principal" class="fw-bold">
+            Gestión de Torneos de Básquetbol
+        </h1>
+        <p id="subtitulo" class="text-secondary">
+            Selecciona el tipo de torneo
+        </p>
+    </header>
+
+    <!-- CONTENIDO -->
+    <main id="main_container" class="container py-4">
+
+        <!-- OPCIONES -->
+        <section id="seccion_opciones" class="row">
+
+            <!-- RÁFAGA -->
+            <div id="col_rafaga" class="col-md-6 mb-3">
+                <label id="label_rafaga" class="w-100">
+
+                    <input id="radio_rafaga"
+                           type="radio"
+                           name="torneo"
+                           class="d-none">
+
+                    <div id="card_rafaga" class="card p-4 shadow-sm">
+                        <h4 id="titulo_rafaga" class="fw-bold">
+                            Torneo Ráfaga
+                        </h4>
+                        <p id="texto_rafaga" class="text-secondary">
+                            Doble eliminación, partidos rápidos en corto tiempo estilo merces.
+                        </p>
+                    </div>
+
+                </label>
+            </div>
+
+            <!-- LIGA -->
+            <div id="col_liga" class="col-md-6 mb-3">
+                <label id="label_liga" class="w-100">
+
+                    <input id="radio_liga"
+                           type="radio"
+                           name="torneo"
+                           class="d-none">
+
+                    <div id="card_liga" class="card p-4 shadow-sm">
+                        <h4 id="titulo_liga" class="fw-bold">
+                            Torneo de Liga
+                        </h4>
+                        <p id="texto_liga" class="text-secondary">
+                            Todos contra todos, tabla de posiciones y finales.
+                        </p>
+                    </div>
+
+                </label>
+            </div>
+
+        </section>
+
+        <!-- INFORMACIÓN -->
+        <section id="seccion_info" class="row mt-4">
+
+            <div id="info_rafaga_col" class="col-md-6">
+                <div id="info_rafaga_card" class="card p-3">
+                    <h6 id="info_rafaga_titulo" class="fw-bold">
+                        Modo Ráfaga
+                    </h6>
+                    <small id="info_rafaga_texto" class="text-secondary">
+                        Ideal para torneos rápidos
+                    </small>
+                </div>
+            </div>
+
+            <div id="info_liga_col" class="col-md-6">
+                <div id="info_liga_card" class="card p-3">
+                    <h6 id="info_liga_titulo" class="fw-bold">
+                        Modo Liga
+                    </h6>
+                    <small id="info_liga_texto" class="text-secondary">
+                        Para ligas largas
+                    </small>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- BOTÓN -->
+        <section id="seccion_boton" class="mt-5">
+            <button id="btn_continuar" class="btn btn-primary w-100">
+                Continuar
+            </button>
+        </section>
+
+    </main>
+
+</body>
+</html>
