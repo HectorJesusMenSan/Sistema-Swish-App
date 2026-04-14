@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ranking de Equipos</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- TU CSS -->
+    <link rel="stylesheet" href="../CSS/styles.css">
+</head>
+
+<body id="cuerpo_ranking">
+
+<!-- HEADER -->
+<header id="header_ranking" class="p-3 d-flex justify-content-between align-items-center">
+    <div>←</div>
+    <h5 class="m-0">Torneo Ráfaga</h5>
+    <div>🔍</div>
+</header>
+
+<main class="container py-3">
+
+    <!-- TARJETA DESTACADA -->
+    <section id="ranking_destacado" class="mb-4 p-4">
+
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <span class="label-top">LÍDER DEL TORNEO</span>
+                <h3 class="titulo-equipo">Lakers Ráfaga</h3>
+            </div>
+
+            <div class="icono-trofeo">🏆</div>
+        </div>
+
+        <div class="row text-center g-2">
+            <div class="col stat-mini">
+                <span>12</span>
+                <p>PJ</p>
+            </div>
+            <div class="col stat-mini">
+                <span>10-2</span>
+                <p>V/D</p>
+            </div>
+            <div class="col stat-mini">
+                <span>980</span>
+                <p>PTS</p>
+            </div>
+            <div class="col stat-mini">
+                <span class="text-primary">+120</span>
+                <p>DIF</p>
+            </div>
+        </div>
+
+        <button class="btn btn-warning w-100 mt-3">
+            Ver Perfil
+        </button>
+
+    </section>
+
+    <!-- TITULO -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5>Clasificación General</h5>
+        <span>⚙</span>
+    </div>
+
+    <!-- TABLA NUEVA -->
+    <section id="tabla_ranking_nuevo">
+
+        <!-- HEADER -->
+        <div class="fila encabezado">
+            <div>#</div>
+            <div>Equipo</div>
+            <div>PJ</div>
+            <div>V/D</div>
+            <div>+</div>
+            <div>-</div>
+            <div>DIF</div>
+            <div>F</div>
+        </div>
+
+        <!-- FILA 1 -->
+        <div class="fila lider">
+            <div>1</div>
+            <div>
+                <strong>Lakers Ráfaga</strong>
+                <span class="badge-mini">Ofensiva</span>
+            </div>
+            <div>12</div>
+            <div>10/2</div>
+            <div>980</div>
+            <div>860</div>
+            <div class="text-primary">+120</div>
+            <div>42</div>
+        </div>
+
+        <!-- FILA 2 -->
+        <div class="fila">
+            <div>2</div>
+            <div>
+                <strong>Chicago Bulls</strong>
+                <span class="badge-mini blue">Defensiva</span>
+            </div>
+            <div>12</div>
+            <div>9/3</div>
+            <div>840</div>
+            <div>720</div>
+            <div class="text-primary">+120</div>
+            <div>38</div>
+        </div>
+
+        <!-- FILA 3 -->
+        <div class="fila">
+            <div>3</div>
+            <div><strong>Boston Celtics</strong></div>
+            <div>12</div>
+            <div>8/4</div>
+            <div>910</div>
+            <div>890</div>
+            <div class="text-primary">+20</div>
+            <div>55</div>
+        </div>
+
+        <!-- FILA 4 -->
+        <div class="fila">
+            <div>4</div>
+            <div><strong>Miami Heat</strong></div>
+            <div>12</div>
+            <div>7/5</div>
+            <div>780</div>
+            <div>795</div>
+            <div class="text-danger">-15</div>
+            <div>49</div>
+        </div>
+
+    </section>
+
+    <!-- CRITERIO -->
+    <section id="criterio_box" class="mt-4 p-3">
+
+        <h6>Criterio de Evaluación</h6>
+        <p>La clasificación se basa en resultados de partidos.</p>
+
+        <div class="criterio-item">
+            <span>Victoria</span>
+            <span class="badge-criterio primary">2 PTS</span>
+        </div>
+
+        <div class="criterio-item">
+            <span>Derrota</span>
+            <span class="badge-criterio">1 PTS</span>
+        </div>
+
+        <div class="criterio-item">
+            <span>No presentación</span>
+            <span class="badge-criterio danger">0 PTS</span>
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>

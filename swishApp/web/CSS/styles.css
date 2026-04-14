@@ -1,0 +1,567 @@
+/* ======================================================
+   🔹 RESET GLOBAL
+   ====================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ======================================================
+   🔹 BASE APP (BODY)
+   ====================================================== */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212 !important;
+    color: white;
+}
+
+/* ======================================================
+   🔹 INDEX (PANTALLA PRINCIPAL)
+   ====================================================== */
+
+/* HEADER PRINCIPAL */
+#header_main {
+    background-color: #121212 !important;
+    text-align: center;
+    padding: 3rem;
+    animation: slideIn 1s ease-out;
+}
+
+#titulo_principal {
+    color: white;
+}
+
+#subtitulo {
+    color: #aaa !important;
+}
+
+/* TARJETAS DE MODO (RÁFAGA / LIGA) */
+.card {
+    background-color: #1c1c1c !important;
+    border: 2px solid #333;
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    color: white;
+}
+
+#card_rafaga:hover,
+#card_liga:hover {
+    border-color: #f47b25;
+}
+
+#radio_rafaga:checked + #card_rafaga,
+#radio_liga:checked + #card_liga {
+    border-color: #f47b25;
+    box-shadow: 0 0 10px rgba(244, 123, 37, 0.4);
+}
+
+/* TARJETAS INFORMATIVAS */
+#info_rafaga_card,
+#info_liga_card {
+    background-color: #1c1c1c !important;
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: white;
+}
+
+/* BOTÓN CONTINUAR */
+#btn_continuar {
+    background-color: #f47b25 !important;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 50px;
+    padding: 15px;
+    transition: 0.3s;
+}
+
+#btn_continuar:hover {
+    background-color: #ff8a3d !important;
+}
+
+/* ======================================================
+   🔹 FIX BOOTSTRAP
+   ====================================================== */
+.text-secondary {
+    color: #aaa !important;
+}
+
+/* ======================================================
+   🔹 ANIMACIONES
+   ====================================================== */
+@keyframes slideIn {
+    from {
+        transform: translateY(-40px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ======================================================
+   🔹 FORMULARIOS (REGISTRO)
+   ====================================================== */
+
+/* INPUTS */
+.form-control {
+    background-color: #1c1c1c !important;
+    color: white !important;
+    border: 1px solid #333 !important;
+}
+
+.form-control:focus {
+    background-color: #1c1c1c !important;
+    color: white !important;
+    border-color: #f47b25 !important;
+    box-shadow: 0 0 5px rgba(244, 123, 37, 0.5) !important;
+}
+
+/* SELECT */
+select.form-control {
+    background-color: #1c1c1c !important;
+    color: white !important;
+}
+
+/* LISTAS */
+.list-group-item {
+    background-color: #1c1c1c !important;
+    color: white !important;
+    border: 1px solid #333 !important;
+}
+
+/* BOTONES FORM */
+.btn-warning {
+    background-color: #f47b25 !important;
+    border: none !important;
+    color: white !important;
+}
+
+.btn-warning:hover {
+    background-color: #ff8a3d !important;
+}
+
+.btn-outline-light {
+    border-color: #f47b25 !important;
+    color: #f47b25 !important;
+}
+
+.btn-outline-light:hover {
+    background-color: #f47b25 !important;
+    color: white !important;
+}
+
+/* ======================================================
+   🔹 PARTIDOS (MATCHES)
+   ====================================================== */
+
+.match-card {
+    background: #1c1c1c;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid #333;
+    color: white;
+}
+
+.team-box {
+    background: #121212;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.vs-box {
+    color: #f47b25;
+    font-weight: bold;
+}
+
+.estado-badge {
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+.pendiente { color: #aaa; }
+.en_juego { color: #f47b25; }
+.finalizado { color: #00ffa2; }
+
+/* ======================================================
+   🔹 ESTADÍSTICAS (PARTIDO EN VIVO)
+   ====================================================== */
+
+/* HEADER */
+#header_estadisticas {
+    border-bottom: 1px solid #333;
+}
+
+#marcador_principal {
+    color: #f47b25;
+    font-weight: bold;
+}
+
+#titulo_equipos {
+    color: #aaa;
+    font-size: 0.8rem;
+}
+
+#texto_ronda {
+    color: #f47b25;
+    font-size: 0.7rem;
+}
+
+/* TARJETA JUGADOR */
+.tarjeta-jugador {
+    background: #1c1c1c;
+    border-radius: 15px;
+    padding: 15px;
+    border: 1px solid #333;
+    transition: 0.3s;
+}
+
+.tarjeta-jugador:hover {
+    border-color: #f47b25;
+    transform: scale(1.01);
+}
+
+.tarjeta-jugador.peligro {
+    border: 2px solid red;
+}
+
+/* INFO JUGADOR */
+.numero-jugador {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(244,123,37,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f47b25;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.numero-jugador.peligro {
+    background: rgba(255,0,0,0.2);
+    color: red;
+}
+
+.nombre-jugador {
+    margin: 0;
+    font-weight: bold;
+}
+
+.ciudad-jugador {
+    color: #aaa;
+    font-size: 0.8rem;
+}
+
+.puntos-jugador {
+    color: #f47b25;
+    font-weight: bold;
+}
+
+.faltas-jugador {
+    color: #aaa;
+    font-size: 0.8rem;
+}
+
+.faltas-jugador.peligro {
+    color: red;
+}
+
+/* BOTONES JUGADOR */
+.btn-accion {
+    flex: 1;
+    background: #333;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    transition: 0.3s;
+}
+
+.btn-accion:hover {
+    background: #444;
+}
+
+.btn-falta {
+    flex: 1;
+    background: #f47b25;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.btn-falta.peligro {
+    background: red;
+}
+
+.deshabilitado {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* FOOTER */
+#footer_estadisticas {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #121212;
+    border-top: 1px solid #333;
+}
+
+.btn-secundario {
+    width: 40px;
+    background: #333;
+    border: none;
+    color: white;
+    border-radius: 50%;
+}
+
+.btn-main {
+    color: white;
+    background: red;
+    border-radius: 15px;
+    padding: 5px;
+}
+
+/* ======================================================
+   🔹 CLASIFICACIÓN
+   ====================================================== */
+
+#header_clasificacion {
+    border-bottom: 1px solid #333;
+}
+
+#titulo_torneo {
+    margin: 0;
+}
+
+#equipo_destacado {
+    position: relative;
+    overflow: hidden;
+}
+
+#label_lider {
+    color: #f47b25;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+#nombre_equipo_destacado {
+    font-weight: bold;
+}
+
+#icono_trofeo {
+    font-size: 2rem;
+}
+
+/* STATS */
+.stat-box {
+    text-align: center;
+}
+
+.stat-box span {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.stat-box p {
+    font-size: 0.7rem;
+    color: #aaa;
+}
+
+/* TABLA */
+#tabla_equipos {
+    background-color: #1c1c1c !important;
+}
+
+#tabla_equipos th,
+#tabla_equipos td {
+    border-color: #333 !important;
+    text-align: center;
+}
+
+#tabla_equipos td:nth-child(2) {
+    text-align: left;
+}
+
+.fila-lider {
+    background: rgba(244, 123, 37, 0.1);
+}
+
+/* CRITERIOS */
+#criterio_box {
+    background: #1c1c1c;
+    border-radius: 15px;
+    border: 1px solid #333;
+}
+
+#texto_criterio {
+    color: #aaa;
+    font-size: 0.85rem;
+}
+
+.criterio-item {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.badge-criterio {
+    background: #333;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+}
+
+.badge-criterio.primary {
+    background: rgba(244, 123, 37, 0.2);
+    color: #f47b25;
+}
+
+.badge-criterio.danger {
+    background: rgba(255, 0, 0, 0.2);
+    color: red;
+}
+
+/* ======================================================
+   🔹 NAVBAR
+   ====================================================== */
+
+#nav_app {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 70px;
+    background: #1c1c1c;
+    border-top: 1px solid #333;
+}
+
+.nav-item {
+    color: #aaa;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-item.active {
+    color: #f47b25;
+    font-weight: bold;
+}
+
+.nav-item:hover {
+    color: #ff8a3d;
+}
+
+/* ======================================================
+   🔹 RANKING
+   ====================================================== */
+
+#ranking_destacado {
+    background: #1c1c1c;
+    border-radius: 20px;
+    border: 1px solid #333;
+    position: relative;
+    overflow: hidden;
+}
+
+#ranking_destacado::after {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 120px;
+    height: 120px;
+    background: rgba(244,123,37,0.1);
+    border-radius: 50%;
+    filter: blur(30px);
+}
+
+.label-top {
+    color: #f47b25;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.titulo-equipo {
+    font-weight: bold;
+}
+
+.icono-trofeo {
+    font-size: 2rem;
+}
+
+.stat-mini {
+    background: #121212;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.stat-mini span {
+    font-weight: bold;
+}
+
+.stat-mini p {
+    font-size: 0.7rem;
+    color: #aaa;
+}
+
+/* TABLA NUEVA */
+#tabla_ranking_nuevo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fila {
+    display: grid;
+    grid-template-columns: 30px 1fr 40px 50px 50px 50px 50px 40px;
+    align-items: center;
+    background: #1c1c1c;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    font-size: 0.85rem;
+}
+
+.fila.encabezado {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 0.7rem;
+}
+
+.fila.lider {
+    background: rgba(244,123,37,0.08);
+    border: 1px solid #f47b25;
+}
+
+.badge-mini {
+    display: inline-block;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: rgba(0,255,0,0.2);
+    color: #00ff88;
+    margin-left: 5px;
+}
+
+.badge-mini.blue {
+    background: rgba(0,150,255,0.2);
+    color: #4da6ff;
+}
+
+/* TITULOS GENERALES */
+h5 {
+    font-weight: bold;
+}

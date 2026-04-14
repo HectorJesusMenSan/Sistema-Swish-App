@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title id="titulo_estadisticas">Estadísticas del partido</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- TU CSS -->
+    <link rel="stylesheet" href="../CSS/styles.css">
+</head>
+
+<body id="cuerpo_estadisticas">
+
+<header id="header_estadisticas" class="p-3">
+
+    <div id="barra_superior" class="d-flex justify-content-between align-items-center">
+
+        <div id="btn_regresar">
+            ←
+        </div>
+
+        <div id="contenedor_marcador" class="text-center">
+            <h2 id="marcador_principal">45 - 42</h2>
+            <p id="titulo_equipos">Equipo A vs Equipo B</p>
+        </div>
+
+        <div id="contenedor_ronda">
+            <span id="texto_ronda">RONDA 3</span>
+        </div>
+
+    </div>
+
+</header>
+
+<main id="principal_estadisticas" class="container py-3">
+
+    <!-- JUGADOR -->
+    <section id="jugador_1" class="tarjeta-jugador mb-3">
+
+        <div id="header_jugador_1" class="d-flex justify-content-between">
+
+            <div id="info_jugador_1" class="d-flex align-items-center">
+
+                <div id="numero_jugador_1" class="numero-jugador">10</div>
+
+                <div id="texto_jugador_1">
+                    <p id="nombre_jugador_1" class="nombre-jugador">Juan Pérez</p>
+                    <span id="ciudad_jugador_1" class="ciudad-jugador">Ciudad de México</span>
+                </div>
+
+            </div>
+
+            <div id="estadisticas_jugador_1" class="text-end">
+                <p id="puntos_jugador_1" class="puntos-jugador">12 PTS</p>
+                <span id="faltas_jugador_1" class="faltas-jugador">Faltas: 3</span>
+            </div>
+
+        </div>
+
+        <div id="acciones_jugador_1" class="d-flex gap-2 mt-3">
+
+            <button id="btn_2pts_1" class="btn-accion">+2 pts</button>
+            <button id="btn_3pts_1" class="btn-accion">+3 pts</button>
+            <button id="btn_falta_1" class="btn-falta">Falta</button>
+
+        </div>
+
+    </section>
+
+    <!-- JUGADOR CON ALERTA -->
+    <section id="jugador_2" class="tarjeta-jugador peligro mb-3">
+
+        <div id="header_jugador_2" class="d-flex justify-content-between">
+
+            <div id="info_jugador_2" class="d-flex align-items-center">
+
+                <div id="numero_jugador_2" class="numero-jugador peligro">05</div>
+
+                <div id="texto_jugador_2">
+                    <p id="nombre_jugador_2" class="nombre-jugador">Carlos Ruiz</p>
+                    <span id="ciudad_jugador_2" class="ciudad-jugador">Guadalajara</span>
+                </div>
+
+            </div>
+
+            <div id="estadisticas_jugador_2" class="text-end">
+                <p id="puntos_jugador_2" class="puntos-jugador">8 PTS</p>
+                <span id="faltas_jugador_2" class="faltas-jugador peligro">Faltas: 4</span>
+            </div>
+
+        </div>
+
+        <div id="acciones_jugador_2" class="d-flex gap-2 mt-3">
+
+            <button id="btn_2pts_2" class="btn-accion deshabilitado">+2 pts</button>
+            <button id="btn_3pts_2" class="btn-accion deshabilitado">+3 pts</button>
+            <button id="btn_falta_2" class="btn-falta peligro">Falta</button>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer id="footer_estadisticas" class="p-3">
+
+    <div id="contenedor_footer" class="d-flex gap-3">
+
+        <button id="btn_deshacer" class="btn-secundario">⟲</button>
+
+        <button id="btn_finalizar" class="btn-main w-100">
+            FINALIZAR PARTIDO
+        </button>
+
+    </div>
+
+</footer>
+
+</body>
+</html>
