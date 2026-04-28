@@ -1,0 +1,84 @@
+/* ======================================================
+   🔹 BASE.CSS - VARIABLES, RESET Y ESTILOS BASE
+   ======================================================
+   Este archivo contiene los estilos fundamentales que
+   se aplican a TODAS las páginas del proyecto.
+====================================================== */
+
+/* ======================================================
+   🔹 1. VARIABLES GLOBALES (COLORES)
+   ======================================================
+   Aquí guardamos todos los colores para NO repetirlos.
+   Si quieres cambiar un color, solo lo modificas aquí.
+====================================================== */
+:root {
+    --color-fondo: #121212;                 /* fondo general (negro oscuro) */
+    --color-card: rgba(28, 28, 28, 0.7);    /* tarjetas con transparencia */
+    --color-borde: rgba(255,255,255,0.08);  /* bordes suaves */
+    --color-principal: #f47b25;             /* naranja principal */
+    --color-principal-hover: #ff8a3d;       /* naranja más claro para hover */
+    --color-texto-secundario: #aaa;         /* gris para textos secundarios */
+    --color-bg-secundario: #1c1c1c;         /* fondo secundario consistente */
+    --color-bg-tabla: #262626;              /* fondo para encabezados de tabla */
+    --border-radius-card: 15px;             /* borde redondeado estándar */
+    --transition: all 0.25s ease;           /* transición estándar */
+}
+
+/* ======================================================
+   🔹 2. RESET (QUITAR ESTILOS POR DEFECTO)
+   ======================================================
+   Limpia los estilos que los navegadores traen por defecto.
+====================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ======================================================
+   🔹 3. ESTILOS BASE DEL BODY
+   ======================================================
+   Fondo general y tipografía de toda la aplicación.
+====================================================== */
+body {
+    font-family: Arial, sans-serif;
+    background: #121212 !important;
+    color: white;
+    background: linear-gradient(180deg, #121212, #1a1a1a);
+}
+
+/* ======================================================
+   🔹 4. CLASES DE UTILIDAD (Utility Classes)
+   ======================================================
+   Clases pequeñas y reutilizables para espaciados.
+====================================================== */
+.text-center { text-align: center; }
+.text-secondary { color: var(--color-texto-secundario) !important; }
+.w-100 { width: 100%; }
+.mb-0 { margin-bottom: 0; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 3rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 1rem; }
+.p-4 { padding: 1.5rem; }
+.px-3 { padding-left: 1rem; padding-right: 1rem; }
+.py-3 { padding-top: 1rem; padding-bottom: 1rem; }
+.py-4 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+
+/* ======================================================
+   🔹 5. MEDIA QUERIES (RESPONSIVE)
+   ======================================================
+   Ajustes para pantallas más pequeñas.
+====================================================== */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}

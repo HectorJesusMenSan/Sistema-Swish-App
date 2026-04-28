@@ -1,0 +1,41 @@
+/* ======================================================
+   🔹 INDEX.CSS - PÁGINA PRINCIPAL (SELECCIÓN DE TORNEO)
+   ======================================================
+   Estilos específicos para la página de selección de torneo.
+====================================================== */
+
+/* Ocultar radios (mantener funcionalidad pero invisibles) */
+input[type="radio"] {
+    display: none;
+}
+
+/* Tarjeta de torneo ráfaga y liga (estilo seleccionable) */
+#card_rafaga,
+#card_liga {
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+/* Efecto cuando el radio está seleccionado */
+#radio_rafaga:checked + #card_rafaga,
+#radio_liga:checked + #card_liga {
+    border: 2px solid var(--color-principal);
+    background: rgba(244,123,37,0.1);
+    transform: scale(1.02);
+}
+
+/* Tarjetas informativas (Rápido / Liga) */
+#info_rafaga_card,
+#info_liga_card {
+    background: var(--color-card);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--border-radius-card);
+    padding: 1rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+#info_rafaga_card h6,
+#info_liga_card h6 {
+    margin-bottom: 0.5rem;
+}

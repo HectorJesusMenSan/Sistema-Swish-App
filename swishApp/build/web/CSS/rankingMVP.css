@@ -1,0 +1,43 @@
+/* ======================================================
+   🔹 RANKINGMVP.CSS - RANKING DE JUGADORES MVP
+   ======================================================
+   Estilos específicos para la página de ranking de jugadores.
+====================================================== */
+
+/* Ajustes específicos de espaciado */
+#ranking_destacado {
+    margin-bottom: 1rem;
+}
+
+#mejorPartido {
+    background: var(--color-card);
+    border-radius: 15px;
+}
+
+#mejorPartido p {
+    margin-bottom: 0;
+}
+
+#mejorPartido .text-secondary {
+    font-size: 0.85rem;
+}
+
+/* Responsive para ranking */
+@media (max-width: 768px) {
+    .fila {
+        grid-template-columns: 30px 1fr 40px 40px;
+        font-size: 0.85rem;
+    }
+    
+    #stats_mvp {
+        gap: 8px;
+    }
+    
+    .stat-mini {
+        padding: 8px;
+    }
+    
+    .stat-mini span {
+        font-size: 1rem;
+    }
+}
