@@ -1,3 +1,10 @@
+<%-- 
+    Document   : registroDeEquipos
+    Created on : 4 may 2026, 8:56:37 a.m.
+    Author     : hecto
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 
 <html lang="es">

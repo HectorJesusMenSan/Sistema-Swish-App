@@ -1,3 +1,10 @@
+<%-- 
+    Document   : index
+    Created on : 4 may 2026, 8:50:44 a.m.
+    Author     : hecto
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 
 <html lang="es">
@@ -167,7 +174,7 @@
         </main>
 
         <!-- ======================================================
-             🔹 NAVBAR INFERIOR (tipo app móvil)
+             🔹 NAVBAR INFERIOR
         ====================================================== -->
 
         <footer id="nav_app" class="d-flex justify-content-around align-items-center">
