@@ -5,6 +5,9 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.util.List" %>
+<%@page import="Modelo.Jugador"%>
+<%@page import="Modelo.Equipo"%>
 <!DOCTYPE html>
 
 <html lang="es">
@@ -16,12 +19,17 @@
 
     <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <c:set var="path" value="${pageContext.request.contextPath}" />
 
     <!-- TU CSS -->
-    <link rel="stylesheet" href="../CSS/base.css">
-    <link rel="stylesheet" href="../CSS/components.css">
-    <link rel="stylesheet" href="../CSS/layout.css">
-    <link rel="stylesheet" href="../CSS/registroEquipos.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/base.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/components.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/layout.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/registroEquipos.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
 
 </head>
 
@@ -40,131 +48,265 @@
     ====================================================== -->
 
     <main class="container pb-5">
+
+        <!-- ================= DATOS DEL EQUIPO ================= -->
+        <section id="seccion_equipo" class="card mb-4">
+            <form action="<%= request.getContextPath() %>/Servlet   " method="post">
+                <input type="hidden" name="accion" value="guardarEquipo">
+
+                <h5>Datos del equipo</h5>
+
+                <!-- NOMBRE -->
+                <div class="mb-3">
+                    <label>Nombre del equipo</label>
+                    <input id="input_nombre_equipo" name="nombre" type="text" class="form-control" placeholder="Ej. Halcones del Norte" required>
+                </div>
+
+                <!-- ORIGEN -->
+                <div class="mb-3">
+                    <label>Origen</label>
+                    <input id="input_origen" name="origen" type="text" class="form-control" placeholder="Ciudad o club" required>
+                </div>
+
+                <!-- ORIGEN -->
+                <div class="mb-3">
+                    <label>Categoria</label>
+                    <input id="input_categoria" name="categoria" type="text" class="form-control" placeholder="Categoria que pertenece" required>
+                </div>
+
+                <!-- BOTÓN -->
+                <button id="btn_agregar_equipo" type="submit" class="btn btn-warning w-100">
+                    Agregar equipo
+                </button>
+            </form>
+        </section>
+            
+        <!-- ================= JUGADORES ================= -->
+        <section id="seccion_jugadores" class="card mb-4">
+
+            <form action="<%= request.getContextPath() %>/Servlet" method = "post">
+                <input type="hidden" name="accion" value="guardarJugador">
+                <h5>Integrantes</h5>
+
+                <!-- NOMBRE -->
+                <div class="mb-3">
+                    <label>Nombre del jugador</label>
+                    <input id="input_jugador" name="nombre" type="text" class="form-control">
+                </div>
+
+                <!-- DORSAL Y POSICIÓN -->
+                <div class="row">
+
+                    <div class="col-4">
+                        <label>Dorsal o Numero</label>
+                        <input id="input_dorsal" name="numero" type="number" class="form-control">
+                    </div>
+
+                    <div class="col-8">
+                        <label>Posición</label>
+                        <select id="select_posicion" name="posicion" class="form-control">
+                            <option>Base (PG)</option>
+                            <option>Escolta (SG)</option>
+                            <option>Alero (SF)</option>
+                            <option>Ala-Pívot (PF)</option>
+                            <option>Pívot (C)</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- BOTÓN -->
+                <button id="btn_agregar_jugador" type="submit" class="btn btn-outline-light w-100 mt-3">
+                    Agregar jugador
+                </button>
+            </form>
+
+            <!-- LISTA -->
+            <div class="mt-4">
+            <%
+                List<Jugador> lista = (List<Jugador>) request.getAttribute("lista");
+            %>
+                <h6>Lista de jugadores</h6>
+
+                <ul id="lista_jugadores" class="list-group">
+                    <%
+                        if (lista != null) {
+                           for (Jugador j : lista) {
+                    %>
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            #<%= j.getNumero() %>
+                            <%= j.getNombre() %>
+                        </span>
+                        <button class="btn btn-sm btn-danger">X</button>
+                    </li>
+                    <%
+                            }
+                        }
+                    %>
+
+                </ul>
+            </div>
+            
+            <!-- FINALIZAR -->
+            <button id="btn_agregar_otro_equipo" class="btn btn-outline-light w-100 mt-3">
+                Agregar nuevo equipo
+            </button>
+
+
+        </section>
         
-    <!-- ================= DATOS DEL EQUIPO ================= -->
-    <section id="seccion_equipo" class="card mb-4">
+        <!-- ================= MODAL ================= -->
+        <!-- ================= MODAL PARA ABRIR ALERTA DE QUE SE AGREGO EQUIPO ================= -->
+        <div class="modal fade" id="modalEquipo" tabindex="-1">
 
-        <h5>Datos del equipo</h5>
+            <div class="modal-dialog modal-dialog-centered">
 
-        <!-- NOMBRE -->
-        <div class="mb-3">
-            <label>Nombre del equipo</label>
-            <input id="input_nombre_equipo" type="text" class="form-control" placeholder="Ej. Halcones del Norte">
-        </div>
+                <div class="modal-content bg-dark text-white">
 
-        <!-- ORIGEN -->
-        <div class="mb-3">
-            <label>Origen</label>
-            <input id="input_origen" type="text" class="form-control" placeholder="Ciudad o club">
-        </div>
+                    <div class="modal-header border-secondary">
 
-        <!-- BOTÓN -->
-        <button id="btn_agregar_equipo" class="btn btn-warning w-100">
-            Agregar equipo
-        </button>
+                        <h5 class="modal-title">
+                            Equipo registrado
+                        </h5>
 
-    </section>
+                    </div>
 
+                    <div class="modal-body">
 
-    <!-- ================= JUGADORES ================= -->
-    <section id="seccion_jugadores" class="card mb-4">
+                        El equipo se agregó correctamente.
 
-        <h5>Integrantes</h5>
+                    </div>
 
-        <!-- NOMBRE -->
-        <div class="mb-3">
-            <label>Nombre del jugador</label>
-            <input id="input_jugador" type="text" class="form-control">
-        </div>
+                    <div class="modal-footer border-secondary">
 
-        <!-- DORSAL Y POSICIÓN -->
-        <div class="row">
+                        <button
+                            type="button"
+                            class="btn btn-warning"
+                            onclick="irJugadores()">
 
-            <div class="col-4">
-                <label>Dorsal</label>
-                <input id="input_dorsal" type="number" class="form-control">
-            </div>
+                            Agregar jugadores
 
-            <div class="col-8">
-                <label>Posición</label>
-                <select id="select_posicion" class="form-control">
-                    <option>Base (PG)</option>
-                    <option>Escolta (SG)</option>
-                    <option>Alero (SF)</option>
-                    <option>Ala-Pívot (PF)</option>
-                    <option>Pívot (C)</option>
-                </select>
+                        </button>
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
-        <!-- BOTÓN -->
-        <button id="btn_agregar_jugador" class="btn btn-outline-light w-100 mt-3">
-            Agregar jugador
-        </button>
+
+        <!-- BOOTSTRAP JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
-        <!-- LISTA -->
-        <div class="mt-4">
-            <h6>Lista de jugadores</h6>
+        <!-- SCRIPT -->
+        <script>
 
-            <ul id="lista_jugadores" class="list-group">
+        function irJugadores() {
 
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    #10 Carlos Jiménez
-                    <button class="btn btn-sm btn-danger">X</button>
-                </li>
+            document
+                .getElementById("seccion_jugadores")
+                .scrollIntoView({
+                    behavior: "smooth"
+                });
 
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    #23 Luis Ortega
-                    <button class="btn btn-sm btn-danger">X</button>
-                </li>
+            let modal = bootstrap.Modal.getInstance(
+                document.getElementById('modalEquipo')
+            );
 
-            </ul>
-        </div>
+            modal.hide();
+        }
 
-        <!-- FINALIZAR -->
-        <button id="btn_finalizar_equipo" class="btn btn-warning w-100 mt-3">
-            Finalizar registro
-        </button>
+        </script>
+        <!-- ================= ABRIR MODAL ================= -->
 
-    </section>
+        <%
+            Boolean equipoGuardado =
+                (Boolean) request.getAttribute("equipoGuardado");
+
+            if (equipoGuardado != null && equipoGuardado) {
+        %>
+
+        <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            let modal = new bootstrap.Modal(
+                document.getElementById("modalEquipo")
+            );
+
+            modal.show();
+
+        });
+
+        </script>
+
+        <%
+            }
+        %>
 
 
     <!-- ================= EQUIPOS REGISTRADOS ================= -->
     <section id="seccion_equipos_registrados">
 
+        <!-- FINALIZAR -->
+        <button id="btn_finalizar_equipo"
+                class="btn btn-warning w-100 mt-2 mb-2">
+
+            Finalizar registro
+
+        </button>
+
         <h5>Equipos registrados</h5>
 
-        <!-- EQUIPO 1 -->
-        <div class="card mb-3 d-flex flex-row justify-content-between align-items-center">
+        <%
+            List<Equipo> lista2 =
+                (List<Equipo>) request.getAttribute("lista2");
+        %>
+
+        <%
+            if (lista2 != null) {
+
+                for (Equipo e : lista2) {
+        %>
+
+        <!-- CARD -->
+        <div class="card mb-3 d-flex flex-row justify-content-between align-items-center p-3">
 
             <div>
-                <h6>Rayos del Sur</h6>
-                <small>Oaxaca • 12 jugadores</small>
+
+                <h6><%= e.getNombre() %></h6>
+
+                <small>
+                    <%= e.getOrigen() %>
+                    --
+                    <%= e.getCategoria() %>
+                </small>
+
             </div>
 
             <div>
-                <button class="btn btn-sm btn-warning">Editar</button>
-                <button class="btn btn-sm btn-danger">Eliminar</button>
+
+                <button class="btn btn-sm btn-warning">
+                    Editar
+                </button>
+
+                <button class="btn btn-sm btn-danger">
+                    Eliminar
+                </button>
+
             </div>
 
         </div>
 
-        <!-- EQUIPO 2 -->
-        <div class="card mb-3 d-flex flex-row justify-content-between align-items-center">
-
-            <div>
-                <h6>Titanes BC</h6>
-                <small>Tijuana • 10 jugadores</small>
-            </div>
-
-            <div>
-                <button class="btn btn-sm btn-warning">Editar</button>
-                <button class="btn btn-sm btn-danger">Eliminar</button>
-            </div>
-
-        </div>
+        <%
+                }
+            }
+        %>
 
     </section>
 

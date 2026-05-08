@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.util.List" %>
 <!DOCTYPE html>
 
 <html lang="es">
@@ -157,16 +158,15 @@
         ================================================== -->
         <section class="mt-4 mb-5">
 
-            <!-- 
-                IMPORTANTE:
-                NO usamos class="btn" porque Bootstrap rompe el color.
-                Usamos SOLO el id para aplicar tu CSS naranja.
-            -->
-            <button id="btn_continuar">
+            <form action="Servlet" method="get" style="display:inline;">
 
-                Continuar
+                <input type="hidden" name="accion" value="irRegistro">
 
-            </button>
+                <button type="submit" id="btn_continuar">
+                    Continuar
+                </button>
+
+            </form>
 
         </section>
 
