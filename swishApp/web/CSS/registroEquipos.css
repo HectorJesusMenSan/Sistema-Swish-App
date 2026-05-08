@@ -1,0 +1,44 @@
+/* ======================================================
+   🔹 REGISTROEQUIPOS.CSS - REGISTRO DE EQUIPOS
+   ======================================================
+   Estilos específicos para la página de registro de equipos.
+====================================================== */
+
+/* Sección de equipos registrados */
+#seccion_equipos_registrados .card {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+#seccion_equipos_registrados .card h6 {
+    margin-bottom: 0.25rem;
+}
+
+#seccion_equipos_registrados .card small {
+    color: var(--color-texto-secundario);
+}
+
+/* Lista de jugadores dentro del registro */
+#lista_jugadores .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Espaciado entre secciones */
+#seccion_equipo,
+#seccion_jugadores {
+    margin-bottom: 1.5rem;
+}
+
+#seccion_equipo h5,
+#seccion_jugadores h5,
+#seccion_equipos_registrados h5 {
+    margin-bottom: 1rem;
+}
+.form-control::placeholder {
+    color: rgba(255,255,255,0.1);
+}
