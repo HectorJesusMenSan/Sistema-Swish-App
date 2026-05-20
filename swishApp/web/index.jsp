@@ -62,103 +62,107 @@
         <!-- ==================================================
              🔸 SECCIÓN: SELECCIÓN DE TORNEO
         ================================================== -->
-        <section id="seleccion_torneo" class="mt-4">
+        <form action="<%= request.getContextPath() %>/Servlet" method = "post">
+            <section id="seleccion_torneo" class="mt-4">
+
+
+
+                    <!-- ==================================================
+                         🔹 OPCIÓN 1: TORNEO RÁFAGA
+                    ================================================== -->
+                    <label class="w-100">
+
+                        <!-- 
+                            IMPORTANTE:
+                            Este radio está oculto, pero controla el estilo.
+                            Cuando está seleccionado, activa el CSS:
+                            #radio_rafaga:checked + #card_rafaga
+                        -->
+                        <input type="radio" name="tipoTorneo" value="rafaga" id="radio_rafaga" hidden>
+
+                        <!-- CARD (tarjeta visual) -->
+                        <div id="card_rafaga" class="card w-100 mb-3">
+
+                            <h5>🏀 Torneo Ráfaga</h5>
+
+                            <p class="text-secondary mb-0">
+                                Eliminación directa, partidos rápidos en un solo día o fin de semana.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    <!-- ==================================================
+                         🔹 OPCIÓN 2: TORNEO DE LIGA
+                    ================================================== -->
+                    <label class="w-100">
+
+                        <!-- radio oculto -->
+                        <input type="radio" name="tipoTorneo" value="liga" id="radio_liga" hidden>
+
+                        <!-- card -->
+                        <div id="card_liga" class="card w-100 mb-3">
+
+                            <h5>📅 Torneo de Liga</h5>
+
+                            <p class="text-secondary mb-0">
+                                Todos contra todos, con tabla de posiciones y finales.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+            </section>
+
 
             <!-- ==================================================
-                 🔹 OPCIÓN 1: TORNEO RÁFAGA
+                 🔸 SECCIÓN: INFORMACIÓN EXTRA
             ================================================== -->
-            <label class="w-100">
+            <section class="row mt-3">
 
-                <!-- 
-                    IMPORTANTE:
-                    Este radio está oculto, pero controla el estilo.
-                    Cuando está seleccionado, activa el CSS:
-                    #radio_rafaga:checked + #card_rafaga
-                -->
-                <input type="radio" name="tipo_torneo" id="radio_rafaga" hidden>
+                <!-- tarjeta informativa izquierda -->
+                <div class="col-6">
 
-                <!-- CARD (tarjeta visual) -->
-                <div id="card_rafaga" class="card w-100 mb-3">
+                    <div id="info_rafaga_card" class="card p-3 text-center">
 
-                    <h5>🏀 Torneo Ráfaga</h5>
+                        <h6>⚡ Rápido</h6>
 
-                    <p class="text-secondary mb-0">
-                        Eliminación directa, partidos rápidos en un solo día o fin de semana.
-                    </p>
+                        <p class="text-secondary mb-0">
+                            Fin de semana
+                        </p>
+
+                    </div>
 
                 </div>
 
-            </label>
+                <!-- tarjeta informativa derecha -->
+                <div class="col-6">
+
+                    <div id="info_liga_card" class="card p-3 text-center">
+
+                        <h6>🏆 Liga</h6>
+
+                        <p class="text-secondary mb-0">
+                            Temporada larga
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+        
 
 
             <!-- ==================================================
-                 🔹 OPCIÓN 2: TORNEO DE LIGA
+                 🔸 BOTÓN CONTINUAR
             ================================================== -->
-            <label class="w-100">
-
-                <!-- radio oculto -->
-                <input type="radio" name="tipo_torneo" id="radio_liga" hidden>
-
-                <!-- card -->
-                <div id="card_liga" class="card w-100 mb-3">
-
-                    <h5>📅 Torneo de Liga</h5>
-
-                    <p class="text-secondary mb-0">
-                        Todos contra todos, con tabla de posiciones y finales.
-                    </p>
-
-                </div>
-
-            </label>
-
-        </section>
+            <section class="mt-4 mb-5">
 
 
-        <!-- ==================================================
-             🔸 SECCIÓN: INFORMACIÓN EXTRA
-        ================================================== -->
-        <section class="row mt-3">
-
-            <!-- tarjeta informativa izquierda -->
-            <div class="col-6">
-
-                <div id="info_rafaga_card" class="card p-3 text-center">
-
-                    <h6>⚡ Rápido</h6>
-
-                    <p class="text-secondary mb-0">
-                        Fin de semana
-                    </p>
-
-                </div>
-
-            </div>
-
-            <!-- tarjeta informativa derecha -->
-            <div class="col-6">
-
-                <div id="info_liga_card" class="card p-3 text-center">
-
-                    <h6>🏆 Liga</h6>
-
-                    <p class="text-secondary mb-0">
-                        Temporada larga
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ==================================================
-             🔸 BOTÓN CONTINUAR
-        ================================================== -->
-        <section class="mt-4 mb-5">
-
-            <form action="Servlet" method="get" style="display:inline;">
 
                 <input type="hidden" name="accion" value="irRegistro">
 
@@ -166,9 +170,8 @@
                     Continuar
                 </button>
 
-            </form>
-
-        </section>
+            </section>
+        </form>
 
 
         </main>
@@ -184,8 +187,8 @@
         <div class="nav-item active">Inicio</div>
 
         <!-- otras opciones -->
-        <div class="nav-item">Equipos</div>
-        <div class="nav-item">Ranking</div>
+        <div class="nav-item">Registro de Equipos</div>
+        <div class="nav-item">Estadisticas</div>
 
 
         </footer>

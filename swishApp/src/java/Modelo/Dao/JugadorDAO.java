@@ -5,6 +5,7 @@
 package Modelo.Dao;
 
 import Configuracion.Conexion;
+import Modelo.Equipo;
 import Modelo.Jugador;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -63,5 +64,46 @@ public class JugadorDAO {
 
         return lista;
     }
+    
+    public List<Jugador> listar_por_equipo(int id) {
+
+        List<Jugador> lista = new ArrayList<>();
+
+        String sql =
+            "SELECT * FROM jugador WHERE id_equipo = ?";
+
+        try (
+            Connection con = Conexion.getConexion();
+            PreparedStatement ps =
+            con.prepareStatement(sql);
+        ) {
+
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                Jugador j = new Jugador();
+
+                j.setId(rs.getInt("id"));
+                j.setNombre(rs.getString("nombre"));
+                j.setNumero(rs.getInt("numero"));
+                j.setPosicion(rs.getString("posicion"));
+                j.setId_equipo(
+                    rs.getInt("id_equipo")
+                );
+
+                lista.add(j);
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+
     
 }

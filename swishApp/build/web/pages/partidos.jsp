@@ -17,10 +17,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- TU CSS -->
-    <link rel="stylesheet" href="../CSS/base.css">
-    <link rel="stylesheet" href="../CSS/components.css">
-    <link rel="stylesheet" href="../CSS/layout.css">
-    <link rel="stylesheet" href="../CSS/partidos.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/base.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/components.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/layout.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/partidos.css">
 </head>
 
 <body id="body_torneo">
@@ -58,35 +58,6 @@
             <div class="mt-3">
                 <button class="btn btn-main w-100">
                     INICIAR PARTIDO
-                </button>
-            </div>
-
-        </section>
-
-        <!-- PARTIDO -->
-        <section class="match-card mb-4">
-
-            <div class="estado-badge en_juego">
-                En juego
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center">
-
-                <div class="team-box">
-                    Warriors Norte
-                </div>
-
-                <div class="vs-box">VS</div>
-
-                <div class="team-box">
-                    Celtics Sur
-                </div>
-
-            </div>
-
-            <div class="mt-3">
-                <button class="btn btn-danger w-100">
-                    FINALIZAR PARTIDO
                 </button>
             </div>
 
