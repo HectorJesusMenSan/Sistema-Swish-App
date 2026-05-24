@@ -104,6 +104,27 @@ public class JugadorDAO {
 
         return lista;
     }
+    
+    // En JugadorDAO.java
+    public boolean existeNumeroEnEquipo(int numero, int idEquipo) {
+        //Verfifica cuantos tienen el mismo numero dentro del equipo.
+        String sql = "SELECT COUNT(*) FROM jugador WHERE numero = ? AND id_equipo = ?";
+
+        try (Connection conn = Conexion.getConexion(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, numero);
+            pstmt.setInt(2, idEquipo);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     
 }

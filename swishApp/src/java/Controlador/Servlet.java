@@ -8,7 +8,7 @@
  * - Redireccionar entre páginas
  * - Enviar listas al JSP
  * 
- * También incluye validaciones para evitar errores
+ * También incluye algunas validaciones para evitar errores
  * cuando NO existen equipos o jugadores registrados.
  */
 
@@ -38,11 +38,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 
-/*
- * El servlet responderá a:
- * 
- * http://localhost:8080/proyecto/Servlet
- */
 @WebServlet("/Servlet")
 public class Servlet extends HttpServlet {
 
@@ -78,35 +73,36 @@ public class Servlet extends HttpServlet {
                 // IR A REGISTRO DE EQUIPOS
                 // =================================================
                 case "irRegistro":
-                    
-                      //Obtiene todos los equipos registrados
+
+                    // Obtener equipos
                     List<Equipo> lista_equipos = c.listar();
-                      //Enviamos la lista de equipos al JSP
+
+                    // Enviar equipos al JSP
                     request.setAttribute("lista2", lista_equipos);
-                    
-                    /*
-                     * VALIDACIÓN IMPORTANTE
-                     * 
-                     * Verifica si la lista tiene elementos
-                     * para evitar:
-                     * 
-                     * IndexOutOfBoundsException
-                     */
-                    if (!lista_equipos.isEmpty()) {                        
-                         // Obtiene el último equipo registrado
-                        Equipo E = lista_equipos.get(lista_equipos.size() - 1);                 
-                        //Busca los jugadores de ese equipo                        
+
+                    // Obtener parámetro
+                    String mostrarJugadores
+                            = request.getParameter("mostrarJugadores");
+
+                    // Solo mostrar jugadores si viene del registro
+                    if ("true".equals(mostrarJugadores)&& !lista_equipos.isEmpty()) {
+
+                        Equipo E = lista_equipos.get(lista_equipos.size() - 1);
+
                         List<Jugador> jugadores = j.listar_por_equipo(E.getId());
-                        // Envía la lista de jugadores al JSP
+
                         request.setAttribute("lista", jugadores);
 
                     } else {
-                          //Si NO hay equiposenviamos null o lista vacía
+
+                        // NO mostrar jugadores automáticamente
                         request.setAttribute("lista", null);
                     }
-                    
-                    // Redirecciona al JSP
-                    request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
+
+                    request.getRequestDispatcher(
+                            "pages/registroDeEquipos.jsp"
+                    ).forward(request, response);
+
                     break;
                     
                 //Redirecion a pestaña de partidos.
@@ -246,54 +242,79 @@ public class Servlet extends HttpServlet {
                 // =================================================
                 // GUARDAR JUGADOR
                 // =================================================
-                case "guardarJugador":                    
-                    //Crear objeto jugador                     
-                    Jugador jugador = new Jugador();
-                    
-                    //Obtener nombre                    
-                    jugador.setNombre(request.getParameter("nombre"));
-                    
-                    //VALIDAR NÚMERO
-                    String numero = request.getParameter("numero");
-                    
-                    //Verifica que NO esté vacío
-                    if (numero != null && !numero.isEmpty()) {
-                        jugador.setNumero(Integer.parseInt(numero));
-                    } else {                        
-                        //Valor por defecto
-                        jugador.setNumero(0);
-                    }
+                case "guardarJugador":
+                    try {
+                        // Crear objeto jugador
+                        Jugador jugador = new Jugador();
 
-                    //Obtener posición
-                    jugador.setPosicion(request.getParameter("posicion"));
+                        // Obtener nombre
+                        jugador.setNombre(request.getParameter("nombre"));
 
-                    //obtener equipos registrados
-                    List<Equipo> lista_equipos = c.listar();
-                    
-                     //VALIDACIÓN IMPORTANTE 
-                     //Verifica si existen equipos
-                    if (!lista_equipos.isEmpty()) {
-                        
-                        //Obtiene último equipo                         
-                        Equipo E = lista_equipos.get(lista_equipos.size() - 1);
-                        
-                        //Asignar ID equipo al jugador
-                        jugador.setId_equipo(E.getId());
-                        
-                        //Guardar jugador                     
-                        j.insertar(jugador);
-                        
-                        //Redireccionar                        
-                        response.sendRedirect("Servlet?accion=irRegistro#seccion_jugadores");
-                    } else {
-                       
-                        //Si NO existen equipos
-                        request.setAttribute("error","Primero debes registrar un equipo");
-                        
-                        //Reenviar página
+                        // VALIDAR NÚMERO
+                        String numeroStr = request.getParameter("numero");
+                        int numero = 0;
+
+                        // Verifica que NO esté vacío
+                        if (numeroStr != null && !numeroStr.isEmpty()) {
+                            numero = Integer.parseInt(numeroStr);
+                            jugador.setNumero(numero);
+                        } else {
+                            // Valor por defecto
+                            jugador.setNumero(0);
+                        }
+
+                        // Obtener posición
+                        jugador.setPosicion(request.getParameter("posicion"));
+
+                        // Obtener equipos registrados
+                        List<Equipo> lista_equipos = c.listar();
+
+                        // VALIDACIÓN IMPORTANTE: Verifica si existen equipos
+                        if (!lista_equipos.isEmpty()) {
+                            // Obtiene último equipo
+                            Equipo E = lista_equipos.get(lista_equipos.size() - 1);
+
+                            // ✅ VERIFICAR SI EL NÚMERO YA EXISTE EN ESTE EQUIPO
+                            if (j.existeNumeroEnEquipo(numero, E.getId())) {
+
+                                request.setAttribute("errorNumero", "❌ El número " + numero + " ya está registrado en este equipo");
+
+                                request.setAttribute("numeroRepetido", true);
+
+                                request.setAttribute("nombreJugador", jugador.getNombre());
+                                request.setAttribute("numeroJugador", numero);
+                                request.setAttribute("posicionJugador", jugador.getPosicion());
+
+                                request.setAttribute("irJugadores", true);
+
+                                List<Equipo> lista2_error = c.listar();
+                                List<Jugador> lista_jugadores_error = j.listar_por_equipo(E.getId());
+
+                                request.setAttribute("lista", lista_jugadores_error);
+                                request.setAttribute("lista2", lista2_error);
+
+                                request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
+
+                                return;
+                            }
+
+                            // Asignar ID equipo al jugador
+                            jugador.setId_equipo(E.getId());
+
+                            // Guardar jugador
+                            j.insertar(jugador);
+
+                            // Redireccionar
+                            response.sendRedirect( "Servlet?accion=irRegistro&mostrarJugadores=true#seccion_jugadores");
+                        } else {
+                            // Si NO existen equipos
+                            request.setAttribute("error", "❌ Primero debes registrar un equipo");
+                            request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
+                        }
+                    } catch (NumberFormatException ex) {
+                        request.setAttribute("errorNumero", "❌ El número debe ser un valor válido");
                         request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
                     }
-
                     return;
                 // =================================================
                 // NUEVO EQUIPO

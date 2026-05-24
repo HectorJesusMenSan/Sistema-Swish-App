@@ -251,6 +251,14 @@
                     </button>
 
                 </form>
+                
+                        <!-- Mostrar error si el número está repetido -->
+            <% if (request.getAttribute("errorNumero") != null) { %>
+                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                    <strong>¡Error!</strong> <%= request.getAttribute("errorNumero") %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
 
             </section>
 
@@ -433,6 +441,28 @@
         ====================================================== -->
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <%
+            Boolean irJugadores
+                    = (Boolean) request.getAttribute("irJugadores");
+        %>
+
+        <% if (irJugadores != null && irJugadores) { %>
+
+        <script>
+            window.onload = function () {
+
+                const seccion =
+                    document.getElementById("seccion_jugadores");
+
+                if (seccion) {
+                    seccion.scrollIntoView({
+                        behavior: "smooth"
+                    });
+                }
+            };
+        </script>
+
+        <% } %>
 
         <!-- ======================================================
              🔹 SCRIPTS
