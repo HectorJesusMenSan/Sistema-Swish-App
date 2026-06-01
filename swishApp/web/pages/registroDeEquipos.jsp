@@ -56,10 +56,12 @@
             <!-- ================= DATOS DEL EQUIPO ================= -->
 
             <section id="seccion_equipo" class="card mb-4">
-
+                <%
+                Equipo equipoEditar = (Equipo) request.getAttribute("equipoEditar");
+                %>
                 <form action="<%= request.getContextPath() %>/Servlet" method="post">
 
-                    <input type="hidden" name="accion" value="guardarEquipo">
+                    <input type="hidden" name="accion" value="guardarEquipo" value="<%= equipoEditar != null ? equipoEditar.getId() : 0 %>">
 
                     <h5>Datos del equipo</h5>
 
@@ -75,6 +77,7 @@
                                title="Solo se permiten letras y espacios, sin números"
                                class="form-control"
                                placeholder="Ej. Halcones del Norte"
+                               value="<%= equipoEditar != null ? equipoEditar.getNombre() : "" %>"
                                required>
 
                     </div>
@@ -91,6 +94,7 @@
                                title="Solo se permiten letras y espacios, sin números"
                                class="form-control"
                                placeholder="Ciudad o club"
+                               value="<%= equipoEditar != null ? equipoEditar.getOrigen() : "" %>"
                                required>
 
                     </div>
@@ -107,6 +111,7 @@
                                title="Solo se permiten letras y espacios, sin números"
                                class="form-control"
                                placeholder="Categoria que pertenece"
+                               value="<%= equipoEditar != null ? equipoEditar.getCategoria() : "" %>"
                                required>
 
                     </div>
@@ -116,7 +121,7 @@
                             type="submit"
                             class="btn btn-warning w-100">
 
-                        Agregar equipo
+                        Guardar
 
                     </button>
 
@@ -223,9 +228,29 @@
 
                             </span>
 
-                            <button class="btn btn-sm btn-danger">
-                                X
-                            </button>
+                            <form action="<%= request.getContextPath()%>/Servlet"
+                                  method="post"
+                                  style="display:inline;">
+
+                                <input type="hidden"
+                                       name="accion"
+                                       value="eliminarJugador">
+
+                                <input type="hidden"
+                                       name="idJugador"
+                                       value="<%= j.getId()%>">
+                                <input type="hidden"
+                                       name="idEquipo"
+                                       value="<%= j.getId_equipo()%>">
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger">
+
+                                    X
+
+                                </button>
+
+                            </form>
 
                         </li>
 
@@ -252,23 +277,39 @@
 
                 </form>
                 
-                        <!-- Mostrar error si el número está repetido -->
+            <!-- Mostrar error si el número está repetido -->
             <% if (request.getAttribute("errorNumero") != null) { %>
                 <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                     <strong>¡Error!</strong> <%= request.getAttribute("errorNumero") %>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <% } %>
+            <!-- Error cantidad de jugadores -->
+            <% if (request.getAttribute("errorJugadores") != null) {%>
+
+            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+
+                <strong>¡Error!</strong>
+                <%= request.getAttribute("errorJugadores")%>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+            <% }%>
 
             </section>
 
             <!-- ================= EQUIPOS REGISTRADOS ================= -->
 
             <section id="seccion_equipos_registrados">
-                <form action="<%= request.getContextPath() %>/Servlet" method="get">
+                <form action="<%= request.getContextPath() %>/PartidosServerlet" method="post">
 
                     <!-- FINALIZAR -->
-                    <input type="hidden" name="accion" value="irPartidos">
+                    <input type="hidden" name="accion" value="generarPartidos">
                     <button id="btn_finalizar_equipo"
                             class="btn btn-warning w-100 mt-2 mb-2">
 
@@ -308,17 +349,51 @@
 
                     </div>
 
-                    <div>
+                            <div class="d-flex gap-2">
 
-                        <button class="btn btn-sm btn-warning">
-                            Editar
-                        </button>
+                                <!-- EDITAR -->
+                                <form action="<%= request.getContextPath()%>/Servlet"
+                                      method="post">
 
-                        <button class="btn btn-sm btn-danger">
-                            Eliminar
-                        </button>
+                                    <input type="hidden"
+                                           name="accion"
+                                           value="editarEquipo">
 
-                    </div>
+                                    <input type="hidden"
+                                           name="id"
+                                           value="<%= e.getId()%>">
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-warning">
+
+                                        Editar
+
+                                    </button>
+
+                                </form>
+
+                                <!-- ELIMINAR -->
+                                <form action="<%= request.getContextPath()%>/Servlet"
+                                      method="post">
+
+                                    <input type="hidden"
+                                           name="accion"
+                                           value="eliminarEquipo">
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="<%= e.getId()%>">
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-danger">
+
+                                        Eliminar
+
+                                    </button>
+
+                                </form>
+
+                            </div>
 
                 </div>
 

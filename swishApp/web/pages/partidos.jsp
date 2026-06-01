@@ -1,107 +1,243 @@
 <%-- 
     Document   : partidos
-    Created on : 4 may 2026, 8:54:35 a.m.
+    Created on : 4 may 2026
     Author     : hecto
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<%@page import="java.util.List"%>
+<%@page import="Modelo.Partido"%>
+<%@page import="Modelo.Dao.EquipoDao"%>
+<%@page import="Modelo.Equipo"%>
+
 <!DOCTYPE html>
+
 <html lang="es" id="html_torneo">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partidos del Torneo</title>
+    <head>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <meta charset="UTF-8">
 
-    <!-- TU CSS -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/base.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/components.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/layout.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/CSS/partidos.css">
-</head>
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0">
 
-<body id="body_torneo">
+        <title>Partidos del Torneo</title>
 
-    <!-- HEADER -->
-    <header id="header_torneo" class="text-center py-4">
-        <h2 id="titulo_torneo">Gráfica del Torneo</h2>
-        <p id="subtitulo_torneo">Avance de partidos</p>
-    </header>
+        <!-- Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+              rel="stylesheet">
 
-    <!-- CONTENIDO -->
-    <main id="main_torneo" class="container py-4">
+        <!-- CSS -->
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/base.css">
 
-        <!-- PARTIDO -->
-        <section class="match-card mb-4">
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/components.css">
 
-            <div class="estado-badge pendiente">
-                Pendiente
-            </div>
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/layout.css">
 
-            <div class="d-flex justify-content-between align-items-center">
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/partidos.css">
 
-                <div class="team-box">
-                    Lakers Ráfaga
+    </head>
+
+    <body id="body_torneo">
+
+        <!-- =========================================
+             HEADER
+        ========================================== -->
+
+        <header id="header_torneo"
+                class="text-center py-4">
+
+            <h2 id="titulo_torneo">
+
+                Gráfica del Torneo
+
+            </h2>
+
+            <p id="subtitulo_torneo">
+
+                Avance de partidos
+
+            </p>
+
+        </header>
+
+        <!-- =========================================
+             CONTENIDO
+        ========================================== -->
+
+        <main id="main_torneo"
+              class="container py-4">
+
+            <%
+                List<Partido> listaPartidos
+                        = (List<Partido>) request.getAttribute("listaPartidos");
+
+                EquipoDao equipoDao = new EquipoDao();
+            %>
+
+            <!-- SI HAY PARTIDOS -->
+
+            <%
+                if (listaPartidos != null
+                        && !listaPartidos.isEmpty()) {
+
+                    for (Partido p : listaPartidos) {
+
+                            // Ocultar partidos BYE
+                            if (p.getId_equipo_b() == 0) {
+                                continue;
+                            }
+
+                            Equipo equipoA
+                                    = equipoDao.buscarPorId(
+                                            p.getId_equipo_a()
+                                    );
+
+                            Equipo equipoB
+                                    = equipoDao.buscarPorId(
+                                            p.getId_equipo_b()
+                                    );
+            %>
+
+            <!-- PARTIDO -->
+
+            <section class="match-card mb-4">
+
+                <!-- ESTADO -->
+
+                <div class="estado-badge pendiente">
+
+                    <%= p.getEstado()%>
+
                 </div>
 
-                <div class="vs-box">VS</div>
+                <!-- EQUIPOS -->
 
-                <div class="team-box">
-                    Bulls CDMX
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <!-- EQUIPO A -->
+
+                    <div class="team-box">
+
+                        <%= equipoA.getNombre()%>
+
+                    </div>
+
+                    <!-- VS -->
+
+                    <div class="vs-box">
+
+                        VS
+
+                    </div>
+
+                    <!-- EQUIPO B -->
+
+                    <!-- EQUIPO B -->
+
+                    <div class="team-box">
+
+                        <%= p.getId_equipo_b() == 0 ? "BYE" : equipoB.getNombre()%>
+
+                    </div>
+
                 </div>
 
-            </div>
+                <!-- BOTÓN -->
 
-            <div class="mt-3">
-                <button class="btn btn-main w-100">
-                    INICIAR PARTIDO
-                </button>
-            </div>
+                <div class="mt-3">
 
-        </section>
+                    <% if (p.getId_equipo_b() != 0) {%>
 
-        <!-- PARTIDO -->
-        <section class="match-card mb-4">
+                    <form action="<%= request.getContextPath()%>/CapturaDeDatosServlet"
+                          method="get">
 
-            <div class="estado-badge finalizado">
-                Finalizado
-            </div>
+                        <input type="hidden"
+                               name="accion"
+                               value="abrirPartido">
 
-            <div class="d-flex justify-content-between align-items-center">
+                        <input type="hidden"
+                               name="idPartido"
+                               value="<%= p.getId()%>">
 
-                <div class="team-box">
-                    Halcones
+                        <button class="btn btn-main w-100">
+
+                            INICIAR PARTIDO
+
+                        </button>
+
+                    </form>
+
+                    <% } else { %>
+
+                    <div class="text-center text-secondary py-2 fw-bold">
+
+                        PASE AUTOMÁTICO
+
+                    </div>
+
+                    <% } %>
+
                 </div>
 
-                <div class="vs-box">VS</div>
+            </section>
 
-                <div class="team-box">
-                    Guerreros
-                </div>
+            <%
+                    }
+                }
+            %>
+
+            <!-- SI NO HAY PARTIDOS -->
+
+            <%
+                if (listaPartidos == null
+                        || listaPartidos.isEmpty()) {
+            %>
+
+            <div class="alert alert-warning text-center">
+
+                No existen partidos generados.
 
             </div>
 
-            <div class="mt-3">
-                <button class="btn btn-success w-100">
-                    VER ESTADÍSTICAS
-                </button>
+            <%
+                }
+            %>
+
+        </main>
+
+        <!-- =========================================
+             NAVBAR
+        ========================================== -->
+
+        <footer id="nav_app"
+                class="d-flex justify-content-around align-items-center">
+
+            <div class="nav-item active">
+
+                GRÁFICA
+
             </div>
 
-        </section>
+            <div class="nav-item">
 
-    </main>
+                ESTADÍSTICAS
 
-    <!-- NAVBAR -->
-    <footer id="nav_app" class="d-flex justify-content-around align-items-center">
+            </div>
 
-        <div class="nav-item active">GRÁFICA</div>
-        <div class="nav-item">ESTADÍSTICAS</div>
-        <div class="nav-item">RANKING</div>
+            <div class="nav-item">
 
-    </footer>
+                RANKING
 
-</body>
+            </div>
+
+        </footer>
+
+    </body>
+
 </html>

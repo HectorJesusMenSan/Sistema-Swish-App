@@ -15,6 +15,8 @@ public class Equipo {
     private String categoria;
     private String origen;
     private int id_torneo;
+    private int derrotas;
+    private String estado;
     //Constructores
     public Equipo(int id, String nombre, String categoria, String origen, int id_torneo) {
         this.id = id;
@@ -64,5 +66,20 @@ public class Equipo {
 
     public void setId_torneo(int id_torneo) {
         this.id_torneo = id_torneo;
+    }
+    public int getDerrotas() {
+    return derrotas;
+    }
+
+    public void setDerrotas(int derrotas) {
+        this.derrotas = derrotas;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

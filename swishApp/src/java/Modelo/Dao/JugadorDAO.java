@@ -125,6 +125,56 @@ public class JugadorDAO {
         }
         return false;
     }
+    
+    public void eliminar(int id) {
+
+        String sql
+                = "DELETE FROM jugador WHERE id = ?";
+
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps
+                = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            ps.executeUpdate();
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+        }
+    }
+    
+    public Jugador buscarPorId(int id) {
+
+        Jugador j = null;
+
+        String sql = "SELECT * FROM jugador WHERE id = ?";
+
+        try (
+                Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql);) {
+
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                j = new Jugador();
+
+                j.setId(rs.getInt("id"));
+                j.setNombre(rs.getString("nombre"));
+                j.setNumero(rs.getInt("numero"));
+                j.setPosicion(rs.getString("posicion"));
+                j.setId_equipo(rs.getInt("id_equipo"));
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return j;
+    }
 
     
 }

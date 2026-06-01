@@ -10,6 +10,9 @@
  * 
  * También incluye algunas validaciones para evitar errores
  * cuando NO existen equipos o jugadores registrados.
+ 
+---Al momento de editar no funciinan las validaciones de minimo y maximo en jugadores
+
  */
 
 package Controlador;
@@ -99,9 +102,7 @@ public class Servlet extends HttpServlet {
                         request.setAttribute("lista", null);
                     }
 
-                    request.getRequestDispatcher(
-                            "pages/registroDeEquipos.jsp"
-                    ).forward(request, response);
+                    request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
 
                     break;
                     
@@ -191,9 +192,6 @@ public class Servlet extends HttpServlet {
         if (accion1 != null) {
 
             switch (accion1) {
-
-
-
                 // =================================================
                 // GUARDAR EQUIPO
                 // =================================================
@@ -214,10 +212,32 @@ public class Servlet extends HttpServlet {
                      * Actualmente:
                      * t.getId() probablemente es 0
                      */
-                    e.setId_torneo(t.getId());
+                    // Obtener el torneo activo
+                    Torneo torneoActivo = t_dao.obtenerUltimo();
+
+                    e.setId_torneo(torneoActivo.getId());
                     
+                    String idStr = request.getParameter("id");
+
+                    int idEquipo = 0;
+
+                    if (idStr != null && !idStr.trim().isEmpty()) {
+
+                        idEquipo = Integer.parseInt(idStr);
+                    }
+
+                    e.setId(idEquipo);
                     //Guardar equipo                    
-                    c.insertar(e);
+                    if (idEquipo > 0) {
+
+                        c.actualizar(e);
+
+                    } else {
+                        // Estado inicial siempre en mayúsculas
+                        e.setEstado("ACTIVO");
+                        e.setDerrotas(0);
+                        c.insertar(e);
+                    }
                     
                     //Obtener lista actualizada de equipos                    
                     List<Equipo> lista2 = c.listar();
@@ -300,6 +320,9 @@ public class Servlet extends HttpServlet {
 
                             // Asignar ID equipo al jugador
                             jugador.setId_equipo(E.getId());
+                            
+                            // Obtener jugadores actuales del equipo
+                            List<Jugador> jugadoresEquipo = j.listar_por_equipo(E.getId());
 
                             // Guardar jugador
                             j.insertar(jugador);
@@ -320,27 +343,183 @@ public class Servlet extends HttpServlet {
                 // NUEVO EQUIPO
                 // =================================================
                 case "nuevoEquipo":
-                    //Obtener lista de equipos existentes
-                    List<Equipo> lista2_nuevo = c.listar();
-                 
-                    //Enviar lista de equipos al JSP
-                    request.setAttribute("lista2", lista2_nuevo);
-                    /*
-                     * IMPORTANTE
-                     * 
-                     * Limpiar jugadores
-                     * para que NO aparezcan
-                     * los del equipo anterior
-                     */
-                    request.setAttribute("lista", null);
 
-                    //Mostrar modal correcto                    
+                    // Obtener equipos
+                    List<Equipo> lista2_nuevo = c.listar();
+
+                    // Verificar si existen equipos
+                    if (!lista2_nuevo.isEmpty()) {
+
+                        // Obtener último equipo
+                        Equipo ultimoEquipo = lista2_nuevo.get(lista2_nuevo.size() - 1);
+
+                        // Obtener jugadores
+                        List<Jugador> jugadoresEquipo = j.listar_por_equipo(ultimoEquipo.getId());
+
+                        // Validar mínimo
+                        if (jugadoresEquipo.size() < 5) {
+
+                            request.setAttribute("errorJugadores", "❌ El equipo necesita mínimo 5 jugadores");
+
+                            request.setAttribute("lista", jugadoresEquipo);
+
+                            request.setAttribute("lista2", lista2_nuevo);
+
+                            request.setAttribute("equipoEditar",ultimoEquipo);
+
+                            request.setAttribute("irJugadores",true);
+
+                            request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
+                            return;
+                        }
+
+                        // Validar máximo
+                        if (jugadoresEquipo.size() > 12) {
+
+                            request.setAttribute("errorJugadores", "❌ El equipo supera el máximo de 12 jugadores");
+
+                            request.setAttribute("lista", jugadoresEquipo);
+
+                            request.setAttribute("lista2",lista2_nuevo);
+
+                            request.setAttribute("equipoEditar",ultimoEquipo);
+
+                            request.setAttribute("irJugadores",true);
+
+                            request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
+                            return;
+                        }
+                    }
+
+                    // Limpiar jugadores
+                    request.setAttribute("lista",null);
+
+                    // Enviar equipos
+                    request.setAttribute("lista2",lista2_nuevo);
+
+                    // Mostrar modal
                     request.setAttribute("jugadoresGuardado",true);
-                    
-                    //Regresar al JSP
-                 
+
                     request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
+
                     return;
+                    
+                case "editarEquipo":
+
+                    // Obtener id del equipo
+                    int idEquipo1 = Integer.parseInt(request.getParameter("id"));
+
+                    // Buscar equipo
+                    Equipo equipoEditar = c.buscarPorId(idEquipo1);
+
+                    // Obtener jugadores del equipo
+                    List<Jugador> jugadoresEquipo = j.listar_por_equipo(idEquipo1);
+
+                    // Obtener todos los equipos
+                    List<Equipo> listaEquipos = c.listar();
+
+                    // Enviar datos al JSP
+                    request.setAttribute("equipoEditar", equipoEditar);
+
+                    request.setAttribute("lista", jugadoresEquipo);
+
+                    request.setAttribute("lista2", listaEquipos);
+
+                    // Ir al JSP
+                    request.getRequestDispatcher(
+                            "pages/registroDeEquipos.jsp"
+                    ).forward(request, response);
+
+                    return;
+                    
+                case "eliminarEquipo":
+
+                    String idEliminarStr = request.getParameter("id");
+
+                    int idEquipoEliminar = 0;
+
+                    if (idEliminarStr != null && !idEliminarStr.trim().isEmpty()) {
+
+                        idEquipoEliminar = Integer.parseInt(idEliminarStr);
+                    }
+
+                    c.eliminar(idEquipoEliminar);
+
+                    List<Equipo> listaEquiposEliminar= c.listar();
+
+                    request.setAttribute("lista2",listaEquiposEliminar);
+
+                    request.setAttribute("lista",null);
+
+                    request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
+
+                    return;
+                
+                case "eliminarJugador": {
+
+                    // Obtener id del jugador
+                    String idJugadorStr = request.getParameter("idJugador");
+
+                    int idJugadorEliminar = 0;
+
+                    if (idJugadorStr != null
+                            && !idJugadorStr.trim().isEmpty()) {
+
+                        idJugadorEliminar
+                                = Integer.parseInt(idJugadorStr);
+                    }
+
+                    // Obtener id del equipo
+                    String idEquipoStr
+                            = request.getParameter("idEquipo");
+
+                    int idEquipoEditar = 0;
+
+                    if (idEquipoStr != null
+                            && !idEquipoStr.trim().isEmpty()) {
+
+                        idEquipoEditar
+                                = Integer.parseInt(idEquipoStr);
+                    }
+
+                    // Eliminar jugador
+                    j.eliminar(idJugadorEliminar);
+
+                    // Buscar equipo que se está editando
+                    Equipo equipoEditar1
+                            = c.buscarPorId(idEquipoEditar);
+
+                    // Obtener jugadores actualizados
+                    List<Jugador> jugadoresActualizados
+                            = j.listar_por_equipo(idEquipoEditar);
+
+                    // Obtener equipos
+                    List<Equipo> listaEquiposJugador
+                            = c.listar();
+
+                    // Enviar datos al JSP
+                    request.setAttribute(
+                            "equipoEditar",
+                            equipoEditar1
+                    );
+
+                    request.setAttribute(
+                            "lista",
+                            jugadoresActualizados
+                    );
+
+                    request.setAttribute(
+                            "lista2",
+                            listaEquiposJugador
+                    );
+
+                    // Regresar al JSP
+                    request.getRequestDispatcher(
+                            "pages/registroDeEquipos.jsp"
+                    ).forward(request, response);
+
+                    return;
+                }
 
 
                 // =================================================

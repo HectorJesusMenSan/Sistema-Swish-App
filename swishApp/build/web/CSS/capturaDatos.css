@@ -315,3 +315,9 @@ body {
     margin: 0 auto;
     padding: 0 16px;
 }
+
+.jugador-expulsado {
+    opacity: 0.45;
+    pointer-events: none;
+    filter: grayscale(100%);
+}

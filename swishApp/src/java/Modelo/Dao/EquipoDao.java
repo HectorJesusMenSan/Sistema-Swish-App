@@ -19,18 +19,31 @@ import java.util.List;
  */
 public class EquipoDao {
     public void insertar(Equipo E) {
-        String sql = "INSERT INTO equipo(nombre, categoria, origen, id_torneo) VALUES(?, ?, ?, ?)";
 
-        try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql
+                = "INSERT INTO equipo("
+                + "nombre, categoria, origen, id_torneo, derrotas, estado"
+                + ") VALUES(?, ?, ?, ?, ?, ?)";
+
+        try (
+                Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, E.getNombre());
+
             ps.setString(2, E.getCategoria());
+
             ps.setString(3, E.getOrigen());
+
             ps.setInt(4, E.getId_torneo());
+
+            ps.setInt(5, 0);
+
+            ps.setString(6, "ACTIVO");
+
             ps.executeUpdate();
 
         } catch (Exception e) {
+
             e.printStackTrace();
         }
     }
@@ -54,6 +67,13 @@ public class EquipoDao {
                 E.setCategoria(rs.getString("categoria"));
                 E.setOrigen(rs.getString("origen"));
                 E.setId_torneo(rs.getInt("id_torneo"));
+                E.setDerrotas(
+                        rs.getInt("derrotas")
+                );
+
+                E.setEstado(
+                        rs.getString("estado")
+                );
                 
                 
 
@@ -65,5 +85,114 @@ public class EquipoDao {
         }
 
         return lista;
+    }
+    public Equipo buscarPorId(int id) {
+
+        Equipo e = new Equipo();
+
+        String sql = "SELECT * FROM equipo WHERE id = ?";
+
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+
+                    e.setId(rs.getInt("id"));
+
+                    e.setNombre(rs.getString("nombre"));
+
+                    e.setCategoria(rs.getString("categoria"));
+
+                    e.setOrigen(rs.getString("origen"));
+
+                    e.setId_torneo(rs.getInt("id_torneo"));
+
+                    // Leer derrotas y estado
+                    e.setDerrotas(rs.getInt("derrotas"));
+
+                    e.setEstado(rs.getString("estado"));
+                }
+            }
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+        }
+
+        return e;
+    }
+    
+    public void actualizar(Equipo e) {
+
+        String sql
+                = "UPDATE equipo "
+                + "SET nombre=?, categoria=?, origen=? "
+                + "WHERE id=?";
+
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps
+                = con.prepareStatement(sql)) {
+
+            ps.setString(1, e.getNombre());
+            ps.setString(2, e.getCategoria());
+            ps.setString(3, e.getOrigen());
+            ps.setInt(4, e.getId());
+
+            ps.executeUpdate();
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+        }
+    }
+    public void actualizarDerrotas(Equipo e) {
+
+        try {
+
+            Connection con = Conexion.getConexion();
+
+            String sql = """
+                     UPDATE equipo
+                     SET derrotas = ?,
+                         estado = ?
+                     WHERE id = ?
+                     """;
+
+            PreparedStatement ps
+                    = con.prepareStatement(sql);
+
+            ps.setInt(1, e.getDerrotas());
+
+            ps.setString(2, e.getEstado());
+
+            ps.setInt(3, e.getId());
+
+            ps.executeUpdate();
+
+            con.close();
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+        }
+    }
+    public void eliminar(int id) {
+
+        String sql
+                = "DELETE FROM equipo WHERE id = ?";
+
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps
+                = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            ps.executeUpdate();
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+        }
     }
 }

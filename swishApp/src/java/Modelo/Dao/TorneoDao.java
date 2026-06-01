@@ -8,6 +8,8 @@ import Configuracion.Conexion;
 import Modelo.Torneo;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 
 
 /**
@@ -30,6 +32,41 @@ public class TorneoDao {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    // =====================================================
+// OBTENER ÚLTIMO TORNEO REGISTRADO
+// =====================================================
+    public Torneo obtenerUltimo() {
+
+        Torneo t = new Torneo();
+
+        String sql
+                = "SELECT * FROM torneo "
+                + "ORDER BY id DESC LIMIT 1";
+
+        try (
+                Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                t.setId(rs.getInt("id"));
+
+                t.setNombre(rs.getString("nombre"));
+
+                t.setEstado(rs.getString("estado"));
+
+                t.setFecha_inicio(rs.getString("fecha_inicio"));
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return t;
     }
     
 }

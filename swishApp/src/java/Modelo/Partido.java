@@ -18,6 +18,12 @@ public class Partido {
     private int id_equipo_a;
     private int id_equipo_b;
     private int id_torneo;
+    private int ronda;
+    private String bracket;
+    private int ganador;
+    private int perdedor;
+    private boolean finalizado;
+    private boolean bye;
     
     //Constructores
     public Partido(int id, String nombre, int puntos_a, int puntos_b, String fecha, int id_equipo_a, int id_equipo_b, int id_torneo) {
@@ -104,6 +110,54 @@ public class Partido {
 
     public void setId_torneo(int id_torneo) {
         this.id_torneo = id_torneo;
+    }
+
+    public int getRonda() {
+        return ronda;
+    }
+
+    public void setRonda(int ronda) {
+        this.ronda = ronda;
+    }
+
+    public String getBracket() {
+        return bracket;
+    }
+
+    public void setBracket(String bracket) {
+        this.bracket = bracket;
+    }
+
+    public int getGanador() {
+        return ganador;
+    }
+
+    public void setGanador(int ganador) {
+        this.ganador = ganador;
+    }
+
+    public int getPerdedor() {
+        return perdedor;
+    }
+
+    public void setPerdedor(int perdedor) {
+        this.perdedor = perdedor;
+    }
+
+    public boolean isFinalizado() {
+        return finalizado;
+    }
+
+    public void setFinalizado(boolean finalizado) {
+        this.finalizado = finalizado;
+    }
+    
+    public boolean isBye() {
+        return bye;
+    }
+
+    public void setBye(boolean bye) {
+        this.bye = bye;
     }
     
     
