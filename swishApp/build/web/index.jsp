@@ -12,7 +12,9 @@
     <head>
         <meta charset="UTF-8">
 
-        <!-- Hace que la página sea responsive (se adapte a celular) -->
+
+
+        <!-- Hace que la página sea responsive -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <title>Selección de Torneo</title>
