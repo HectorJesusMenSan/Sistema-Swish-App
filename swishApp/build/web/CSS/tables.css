@@ -73,11 +73,18 @@
 }
 
 #foto_mvp {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
     border-radius: 50%;
     border: 2px solid var(--color-principal);
-    object-fit: cover;
+    background: rgba(244, 123, 37, 0.2);
+    color: #f47b25;
+    font-weight: bold;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #nombre_mvp {

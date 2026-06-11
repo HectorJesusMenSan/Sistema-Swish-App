@@ -44,10 +44,7 @@
 
         <!-- título principal -->
         <h2 id="titulo_principal">Gestión de Torneos</h2>
-
-        <!-- pequeño texto debajo -->
-        <p id="subtitulo">Selecciona el tipo de torneo</p>
-
+        <h4>"Para pueblos regionales de Oaxaca"</h4>
 
         </header>
 
@@ -62,136 +59,114 @@
         <!-- ==================================================
              🔸 SECCIÓN: SELECCIÓN DE TORNEO
         ================================================== -->
-        <form action="<%= request.getContextPath() %>/Servlet" method = "post">
+        <form action="<%= request.getContextPath()%>/Servlet" method="post"
+              id="formTorneo">
+
             <section id="seleccion_torneo" class="mt-4">
 
+                <label class="w-100">
 
+                    <input type="radio" name="tipoTorneo"
+                           value="rafaga" id="radio_rafaga" hidden>
 
-                    <!-- ==================================================
-                         🔹 OPCIÓN 1: TORNEO RÁFAGA
-                    ================================================== -->
-                    <label class="w-100">
+                    <div id="card_rafaga" class="card w-100 mb-3">
 
-                        <!-- 
-                            IMPORTANTE:
-                            Este radio está oculto, pero controla el estilo.
-                            Cuando está seleccionado, activa el CSS:
-                            #radio_rafaga:checked + #card_rafaga
-                        -->
-                        <input type="radio" name="tipoTorneo" value="rafaga" id="radio_rafaga" hidden>
+                        <h5>🏀 Torneo Ráfaga</h5>
 
-                        <!-- CARD (tarjeta visual) -->
-                        <div id="card_rafaga" class="card w-100 mb-3">
+                        <p class="text-secondary mb-0">
+                            Eliminación directa, partidos rápidos
+                            en un solo día o fin de semana.
+                        </p>
 
-                            <h5>🏀 Torneo Ráfaga</h5>
+                    </div>
 
-                            <p class="text-secondary mb-0">
-                                Eliminación directa, partidos rápidos en un solo día o fin de semana.
-                            </p>
+                </label>
 
-                        </div>
+                <label class="w-100">
 
-                    </label>
+                    <input type="radio" name="tipoTorneo"
+                           value="verTorneos" id="radio_liga" hidden>
 
+                    <div id="card_liga" class="card w-100 mb-3">
 
-                    <!-- ==================================================
-                         🔹 OPCIÓN 2: TORNEO DE LIGA
-                    ================================================== -->
-                    <label class="w-100">
+                        <h5>📅 Ver Torneos</h5>
 
-                        <!-- radio oculto -->
-                        <input type="radio" name="tipoTorneo" value="liga" id="radio_liga" hidden>
+                        <p class="text-secondary mb-0">
+                            Ver torneos existentes o finalizados.
+                        </p>
 
-                        <!-- card -->
-                        <div id="card_liga" class="card w-100 mb-3">
+                    </div>
 
-                            <h5>📅 Torneo de Liga</h5>
-
-                            <p class="text-secondary mb-0">
-                                Todos contra todos, con tabla de posiciones y finales.
-                            </p>
-
-                        </div>
-
-                    </label>
+                </label>
 
             </section>
 
-
-            <!-- ==================================================
-                 🔸 SECCIÓN: INFORMACIÓN EXTRA
-            ================================================== -->
             <section class="row mt-3">
 
-                <!-- tarjeta informativa izquierda -->
                 <div class="col-6">
 
                     <div id="info_rafaga_card" class="card p-3 text-center">
 
                         <h6>⚡ Rápido</h6>
 
-                        <p class="text-secondary mb-0">
-                            Fin de semana
-                        </p>
+                        <p class="text-secondary mb-0">Ideal para merces o torneos representativos</p>
 
                     </div>
 
                 </div>
 
-                <!-- tarjeta informativa derecha -->
                 <div class="col-6">
 
                     <div id="info_liga_card" class="card p-3 text-center">
 
-                        <h6>🏆 Liga</h6>
+                        <h6>🏆 Historial</h6>
 
-                        <p class="text-secondary mb-0">
-                            Temporada larga
-                        </p>
+                        <p class="text-secondary mb-0">Para ver torneos finalizados o dar continuidad</p>
 
                     </div>
 
                 </div>
 
             </section>
-        
 
-
-            <!-- ==================================================
-                 🔸 BOTÓN CONTINUAR
-            ================================================== -->
             <section class="mt-4 mb-5">
 
-
-
-                <input type="hidden" name="accion" value="irRegistro">
-
-                <button type="submit" id="btn_continuar">
+                <button type="button" id="btn_continuar"
+                        onclick="continuar()">
                     Continuar
                 </button>
 
             </section>
+
         </form>
+
+        <script>
+            function continuar() {
+
+                const opcion = document.querySelector(
+                    'input[name="tipoTorneo"]:checked'
+                );
+
+                if (!opcion) {
+                    alert("Selecciona una opción");
+                    return;
+                }
+
+                if (opcion.value === "verTorneos") {
+
+                    window.location.href =
+                        "<%= request.getContextPath()%>/TorneoServlet?accion=verTorneos";
+
+                } else {
+
+                    document.getElementById("formTorneo").submit();
+                }
+            }
+        </script>
 
 
         </main>
 
-        <!-- ======================================================
-             🔹 NAVBAR INFERIOR
-        ====================================================== -->
-
-        <footer id="nav_app" class="d-flex justify-content-around align-items-center">
-
-
-        <!-- opción activa -->
-        <div class="nav-item active">Inicio</div>
-
-        <!-- otras opciones -->
-        <div class="nav-item">Registro de Equipos</div>
-        <div class="nav-item">Estadisticas</div>
-
-
-        </footer>
 
     </body>
 </html>

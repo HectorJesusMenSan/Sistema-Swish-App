@@ -287,240 +287,29 @@ public class CapturaDeDatosServlet extends HttpServlet {
 // =====================================================
 // GENERAR SIGUIENTE PARTIDO
 // =====================================================
-    public void generarSiguientePartido(
-            Partido partidoFinalizado
-    ) {
+    public void generarSiguientePartido(Partido partidoFinalizado) {
 
         int idTorneo = partidoFinalizado.getId_torneo();
 
-        int rondaActual = partidoFinalizado.getRonda();
-
-        String bracketActual = partidoFinalizado.getBracket();
-
-        // =========================================
-        // CASO ESPECIAL: GRAN FINAL TERMINÓ
-        // =========================================
-        if ("GRAN_FINAL".equals(bracketActual)) {
+        // Si terminó la gran final, el torneo acabó
+        if ("GRAN_FINAL".equals(partidoFinalizado.getBracket())) {
             return;
         }
 
         // =========================================
-        // VERIFICAR SI TODA LA RONDA TERMINÓ
+        // RECOLECTAR ESTADO ACTUAL DEL TORNEO
         // =========================================
-        boolean rondaCompleta = verificarRondaCompleta(
-                idTorneo,
-                bracketActual,
-                rondaActual
-        );
+        List<Partido> partidos = partidoDao.listarPorTorneo(idTorneo);
 
-        if (!rondaCompleta) {
-            // Hay partidos pendientes, no hacer nada todavía
-            return;
-        }
-
-        // =========================================
-        // RECOLECTAR GANADORES Y PERDEDORES
-        // DE LA RONDA QUE ACABA DE TERMINAR
-        // =========================================
-        List<Integer> ganadoresRonda = new ArrayList<>();
-
-        List<Integer> perdedoresRonda = new ArrayList<>();
-
-        List<Partido> todosLosPartidos
-                = partidoDao.listarPorTorneo(idTorneo);
-
-        for (Partido p : todosLosPartidos) {
-
-            // Solo del bracket y ronda que terminó
-            if (!bracketActual.equals(p.getBracket())) {
-                continue;
-            }
-
-            if (p.getRonda() != rondaActual) {
-                continue;
-            }
-
-            if (!"FINALIZADO".equals(p.getEstado())) {
-                continue;
-            }
-
-            // Agregar ganador
-            if (!ganadoresRonda.contains(p.getGanador())) {
-                ganadoresRonda.add(p.getGanador());
-            }
-
-            // Ignorar perdedor 0 (partido BYE no tiene perdedor)
-            if (p.getPerdedor() == 0) {
-                continue;
-            }
-
-            // Guardar perdedor solo si no está eliminado
-            Equipo equipoPerdedor
-                    = equipoDao.buscarPorId(p.getPerdedor());
-
-            if (equipoPerdedor.getDerrotas() < 2) {
-
-                if (!perdedoresRonda.contains(p.getPerdedor())) {
-                    perdedoresRonda.add(p.getPerdedor());
-                }
-            }
-        }
-
-        // =========================================
-        // LÓGICA SEGÚN EL BRACKET QUE TERMINÓ
-        // =========================================
-        if ("WINNERS".equals(bracketActual)) {
-
-            // Ganadores de WINNERS:
-            // Ganadores de WINNERS:
-            // Si hay 2 o más, se emparejan entre sí
-            if (ganadoresRonda.size() >= 2) {
-
-                crearPartidos(
-                        ganadoresRonda,
-                        "WINNERS",
-                        rondaActual + 1,
-                        idTorneo
-                );
-
-                // Si sobra un ganador sin emparejar (número impar)
-                // se le da BYE automático en WINNERS
-                if (ganadoresRonda.size() % 2 != 0) {
-
-                    int equipoSobrante
-                            = ganadoresRonda.get(ganadoresRonda.size() - 1);
-
-                    // Crear BYE para el sobrante en la siguiente ronda
-                    Partido bye = new Partido();
-
-                    bye.setNombre("BYE Ronda " + (rondaActual + 1));
-
-                    bye.setEstado("FINALIZADO");
-
-                    bye.setPuntos_a(0);
-
-                    bye.setPuntos_b(0);
-
-                    bye.setFecha(
-                            java.time.LocalDate.now().toString()
-                    );
-
-                    bye.setBracket("WINNERS");
-
-                    bye.setRonda(rondaActual + 1);
-
-                    bye.setId_equipo_a(equipoSobrante);
-
-                    bye.setId_equipo_b(0);
-
-                    bye.setId_torneo(idTorneo);
-
-                    bye.setGanador(equipoSobrante);
-
-                    bye.setPerdedor(0);
-
-                    bye.setBye(true);
-
-                    // Solo insertar si no existe ya
-                    boolean existeBye = partidoDao.existePartidoPendiente(
-                            equipoSobrante,
-                            0,
-                            idTorneo
-                    );
-
-                    if (!existeBye) {
-                        partidoDao.insertar(bye);
-                    }
-                }
-            }
-
-            // Perdedores de WINNERS van al LOSERS bracket
-            if (perdedoresRonda.size() >= 2) {
-
-                int rondaLosers = obtenerSiguienteRondaLosers(idTorneo);
-
-                crearPartidos(
-                        perdedoresRonda,
-                        "LOSERS",
-                        rondaLosers,
-                        idTorneo
-                );
-
-            } else if (perdedoresRonda.size() == 1) {
-
-                // Solo 1 perdedor, espera al siguiente perdedor de WINNERS
-                // o sube directo si el LOSERS ya tiene alguien esperando
-                intentarCruzarConLosers(
-                        perdedoresRonda.get(0),
-                        idTorneo
-                );
-            }
-
-        } else if ("LOSERS".equals(bracketActual)) {
-
-            // Ganadores del LOSERS siguen en LOSERS
-            // Ganadores del LOSERS siguen en LOSERS
-            if (ganadoresRonda.size() >= 2) {
-
-                crearPartidos(
-                        ganadoresRonda,
-                        "LOSERS",
-                        rondaActual + 1,
-                        idTorneo
-                );
-
-                // Si sobra uno, intentar cruzarlo
-                if (ganadoresRonda.size() % 2 != 0) {
-
-                    int sobrante
-                            = ganadoresRonda.get(ganadoresRonda.size() - 1);
-
-                    intentarCruzarConLosers(sobrante, idTorneo);
-                }
-
-            } else if (ganadoresRonda.size() == 1) {
-
-                intentarCruzarConLosers(
-                        ganadoresRonda.get(0),
-                        idTorneo
-                );
-            }
-            
-        }
-
-        // =========================================
-        // VERIFICAR GRAN FINAL
-        // =========================================
-        verificarGranFinal(idTorneo);
-    }
-
-// =====================================================
-// INTENTAR EMPAREJAR UN EQUIPO QUE ESPERA EN LOSERS
-// =====================================================
-    public void intentarCruzarConLosers(
-            int idEquipo,
-            int idTorneo
-    ) {
-
-        // Buscar si hay otro equipo esperando en losers
-        // (sin partido pendiente asignado)
-        List<Partido> partidos
-                = partidoDao.listarPorTorneo(idTorneo);
-
-        // Recolectar equipos que YA tienen partido pendiente en losers
+        // Equipos con partido pendiente asignado
         List<Integer> ocupados = new ArrayList<>();
 
         for (Partido p : partidos) {
-
-            if (!"LOSERS".equals(p.getBracket())) {
-                continue;
-            }
 
             if (!"PENDIENTE".equals(p.getEstado())) {
                 continue;
             }
 
-            // Evitar agregar id 0 (partido BYE)
             if (p.getId_equipo_a() != 0) {
                 ocupados.add(p.getId_equipo_a());
             }
@@ -530,11 +319,13 @@ public class CapturaDeDatosServlet extends HttpServlet {
             }
         }
 
-        // Buscar equipos vivos del torneo que estén en losers
-        // (1 derrota, activo) y que NO tengan partido pendiente
-        List<Equipo> todosEquipos = equipoDao.listar();
+        // =========================================
+        // EQUIPOS DISPONIBLES EN WINNERS
+        // (0 derrotas, activo, sin partido pendiente)
+        // =========================================
+        List<Integer> disponiblesWinners = new ArrayList<>();
 
-        int equipoEsperando = 0;
+        List<Equipo> todosEquipos = equipoDao.listar();
 
         for (Equipo e : todosEquipos) {
 
@@ -542,8 +333,33 @@ public class CapturaDeDatosServlet extends HttpServlet {
                 continue;
             }
 
-            // Solo los que tienen exactamente 1 derrota
-            // Solo equipos activos con exactamente 1 derrota
+            if (!"ACTIVO".equals(e.getEstado())) {
+                continue;
+            }
+
+            if (e.getDerrotas() != 0) {
+                continue;
+            }
+
+            if (ocupados.contains(e.getId())) {
+                continue;
+            }
+
+            disponiblesWinners.add(e.getId());
+        }
+
+        // =========================================
+        // EQUIPOS DISPONIBLES EN LOSERS
+        // (1 derrota, activo, sin partido pendiente)
+        // =========================================
+        List<Integer> disponiblesLosers = new ArrayList<>();
+
+        for (Equipo e : todosEquipos) {
+
+            if (e.getId_torneo() != idTorneo) {
+                continue;
+            }
+
             if (!"ACTIVO".equals(e.getEstado())) {
                 continue;
             }
@@ -552,265 +368,192 @@ public class CapturaDeDatosServlet extends HttpServlet {
                 continue;
             }
 
-            // No es el mismo equipo que acaba de llegar
-            if (e.getId() == idEquipo) {
-                continue;
-            }
-
-            // No tiene partido pendiente ya asignado
             if (ocupados.contains(e.getId())) {
                 continue;
             }
 
-            equipoEsperando = e.getId();
-            break;
+            disponiblesLosers.add(e.getId());
         }
 
-        // Si encontramos a alguien esperando, crear el partido
-        if (equipoEsperando != 0 && idEquipo != 0) {
-
-            int rondaLosers
-                    = obtenerSiguienteRondaLosers(idTorneo);
-
-            List<Integer> par = new ArrayList<>();
-
-            par.add(idEquipo);
-
-            par.add(equipoEsperando);
-
-            crearPartidos(par, "LOSERS", rondaLosers, idTorneo);
-        }
-
-        // Si no hay nadie esperando, este equipo queda en espera
-        // hasta que llegue otro perdedor
-    }
-
-// =====================================================
-// VERIFICAR SI TODA UNA RONDA ESTÁ COMPLETA
-// =====================================================
-    public boolean verificarRondaCompleta(
-            int idTorneo,
-            String bracket,
-            int ronda
-    ) {
-
-        List<Partido> partidos
-                = partidoDao.listarPorTorneo(idTorneo);
-
-        boolean hayAlMenosUno = false;
+        // =========================================
+        // CALCULAR SIGUIENTE RONDA
+        // =========================================
+        int siguienteRonda = 1;
 
         for (Partido p : partidos) {
 
-            if (!bracket.equals(p.getBracket())) {
-                continue;
-            }
-
-            if (p.getRonda() != ronda) {
-                continue;
-            }
-
-            hayAlMenosUno = true;
-
-            if (!"FINALIZADO".equals(p.getEstado())) {
-                return false;
-            }
-        }
-
-        // Si no encontró ningún partido de esa ronda, no está completa
-        return hayAlMenosUno;
-    }
-
-// =====================================================
-// CREAR PARTIDOS DE LA SIGUIENTE RONDA
-// =====================================================
-    public void crearPartidos(
-            List<Integer> equipos,
-            String bracket,
-            int ronda,
-            int idTorneo
-    ) {
-
-        if (equipos.size() < 2) {
-            return;
-        }
-
-        for (int i = 0; i < equipos.size() - 1; i += 2) {
-
-            int equipoA = equipos.get(i);
-
-            int equipoB = equipos.get(i + 1);
-
-            if (equipoA == equipoB) {
-                continue;
-            }
-
-            boolean existe = partidoDao.existePartidoPendiente(
-                    equipoA,
-                    equipoB,
-                    idTorneo
-            );
-
-            if (existe) {
-                continue;
-            }
-
-            Partido nuevo = new Partido();
-
-            nuevo.setNombre(bracket + " Ronda " + ronda);
-
-            nuevo.setEstado("PENDIENTE");
-
-            nuevo.setPuntos_a(0);
-
-            nuevo.setPuntos_b(0);
-
-            nuevo.setFecha(
-                    java.time.LocalDate.now().toString()
-            );
-
-            nuevo.setBracket(bracket);
-
-            nuevo.setRonda(ronda);
-
-            nuevo.setId_equipo_a(equipoA);
-
-            nuevo.setId_equipo_b(equipoB);
-
-            nuevo.setId_torneo(idTorneo);
-
-            partidoDao.insertar(nuevo);
-        }
-    }
-
-// =====================================================
-// OBTENER SIGUIENTE NÚMERO DE RONDA EN LOSERS
-// =====================================================
-    public int obtenerSiguienteRondaLosers(int idTorneo) {
-
-        List<Partido> partidos
-                = partidoDao.listarPorTorneo(idTorneo);
-
-        int maxRonda = 0;
-
-        for (Partido p : partidos) {
-
-            if (!"LOSERS".equals(p.getBracket())) {
-                continue;
-            }
-
-            if (p.getRonda() > maxRonda) {
-                maxRonda = p.getRonda();
-            }
-        }
-
-        return maxRonda + 1;
-    }
-
-// =====================================================
-// VERIFICAR SI SE PUEDE CREAR LA GRAN FINAL
-// =====================================================
-    public void verificarGranFinal(int idTorneo) {
-
-        List<Equipo> equipos = equipoDao.listar();
-
-        int invicto = 0;
-
-        int sobreviviente = 0;
-
-        for (Equipo e : equipos) {
-
-            if (e.getId_torneo() != idTorneo) {
-                continue;
-            }
-
-            if (!"ACTIVO".equals(e.getEstado())) {
-                continue;
-            }
-
-            if (e.getDerrotas() == 0) {
-                invicto = e.getId();
-            }
-
-            if (e.getDerrotas() == 1) {
-                sobreviviente = e.getId();
-            }
-        }
-
-        // Necesitamos exactamente uno de cada tipo
-        if (invicto == 0 || sobreviviente == 0) {
-            return;
-        }
-
-        // Verificar que no haya partidos pendientes
-        // Solo bloqueamos si hay partidos pendientes que NO involucren
-        // al invicto ni al sobreviviente
-        List<Partido> partidos
-                = partidoDao.listarPorTorneo(idTorneo);
-
-        for (Partido p : partidos) {
-
-            // Ignorar gran final
             if ("GRAN_FINAL".equals(p.getBracket())) {
                 continue;
             }
 
-            // Ignorar finalizados
-            if ("FINALIZADO".equals(p.getEstado())) {
-                continue;
+            if (p.getRonda() >= siguienteRonda) {
+                siguienteRonda = p.getRonda() + 1;
+            }
+        }
+
+        // =========================================
+        // CASO GRAN FINAL:
+        // 1 en winners + 1 en losers + sin pendientes
+        // =========================================
+        if (disponiblesWinners.size() == 1
+                && disponiblesLosers.size() == 1) {
+
+            // Verificar que no haya partidos pendientes
+            boolean hayPendientes = false;
+
+            for (Partido p : partidos) {
+
+                if ("GRAN_FINAL".equals(p.getBracket())) {
+                    continue;
+                }
+
+                if ("PENDIENTE".equals(p.getEstado())) {
+                    hayPendientes = true;
+                    break;
+                }
             }
 
-            // Si hay un partido pendiente que involucra
-            // al invicto o al sobreviviente, no crear gran final todavía
-            boolean involucraInvicto
-                    = p.getId_equipo_a() == invicto
-                    || p.getId_equipo_b() == invicto;
+            if (!hayPendientes) {
 
-            boolean involucrasobreviviente
-                    = p.getId_equipo_a() == sobreviviente
-                    || p.getId_equipo_b() == sobreviviente;
+                boolean existe = partidoDao.existePartidoPendiente(
+                        disponiblesWinners.get(0),
+                        disponiblesLosers.get(0),
+                        idTorneo
+                );
 
-            if (involucraInvicto || involucrasobreviviente) {
-                // Todavía tienen partidos por jugar
+                if (!existe) {
+
+                    Partido granFinal = new Partido();
+
+                    granFinal.setNombre("Gran Final");
+
+                    granFinal.setEstado("PENDIENTE");
+
+                    granFinal.setPuntos_a(0);
+
+                    granFinal.setPuntos_b(0);
+
+                    granFinal.setFecha(
+                            java.time.LocalDate.now().toString()
+                    );
+
+                    granFinal.setBracket("GRAN_FINAL");
+
+                    granFinal.setRonda(siguienteRonda);
+
+                    granFinal.setId_equipo_a(
+                            disponiblesWinners.get(0)
+                    );
+
+                    granFinal.setId_equipo_b(
+                            disponiblesLosers.get(0)
+                    );
+
+                    granFinal.setId_torneo(idTorneo);
+
+                    partidoDao.insertar(granFinal);
+                }
+
                 return;
             }
         }
 
-        // Verificar que no exista ya la gran final
-        boolean existe = partidoDao.existePartidoPendiente(
-                invicto,
-                sobreviviente,
-                idTorneo
-        );
+        // =========================================
+        // CREAR PARTIDOS WINNERS
+        // Si hay 2+ disponibles en winners
+        // =========================================
+        if (disponiblesWinners.size() >= 2) {
 
-        if (existe) {
-            return;
+            for (int i = 0; i < disponiblesWinners.size() - 1; i += 2) {
+
+                int equipoA = disponiblesWinners.get(i);
+
+                int equipoB = disponiblesWinners.get(i + 1);
+
+                boolean existe = partidoDao.existePartidoPendiente(
+                        equipoA,
+                        equipoB,
+                        idTorneo
+                );
+
+                if (!existe) {
+
+                    Partido nuevo = new Partido();
+
+                    nuevo.setNombre("WINNERS Ronda " + siguienteRonda);
+
+                    nuevo.setEstado("PENDIENTE");
+
+                    nuevo.setPuntos_a(0);
+
+                    nuevo.setPuntos_b(0);
+
+                    nuevo.setFecha(
+                            java.time.LocalDate.now().toString()
+                    );
+
+                    nuevo.setBracket("WINNERS");
+
+                    nuevo.setRonda(siguienteRonda);
+
+                    nuevo.setId_equipo_a(equipoA);
+
+                    nuevo.setId_equipo_b(equipoB);
+
+                    nuevo.setId_torneo(idTorneo);
+
+                    partidoDao.insertar(nuevo);
+                }
+            }
         }
 
-        // Crear la gran final
-        Partido granFinal = new Partido();
+        // =========================================
+        // CREAR PARTIDOS LOSERS
+        // Si hay 2+ disponibles en losers
+        // =========================================
+        if (disponiblesLosers.size() >= 2) {
 
-        granFinal.setNombre("Gran Final");
+            for (int i = 0; i < disponiblesLosers.size() - 1; i += 2) {
 
-        granFinal.setEstado("PENDIENTE");
+                int equipoA = disponiblesLosers.get(i);
 
-        granFinal.setPuntos_a(0);
+                int equipoB = disponiblesLosers.get(i + 1);
 
-        granFinal.setPuntos_b(0);
+                boolean existe = partidoDao.existePartidoPendiente(
+                        equipoA,
+                        equipoB,
+                        idTorneo
+                );
 
-        granFinal.setFecha(
-                java.time.LocalDate.now().toString()
-        );
+                if (!existe) {
 
-        granFinal.setBracket("GRAN_FINAL");
+                    Partido nuevo = new Partido();
 
-        granFinal.setRonda(1);
+                    nuevo.setNombre("LOSERS Ronda " + siguienteRonda);
 
-        granFinal.setId_equipo_a(invicto);
+                    nuevo.setEstado("PENDIENTE");
 
-        granFinal.setId_equipo_b(sobreviviente);
+                    nuevo.setPuntos_a(0);
 
-        granFinal.setId_torneo(idTorneo);
+                    nuevo.setPuntos_b(0);
 
-        partidoDao.insertar(granFinal);
+                    nuevo.setFecha(
+                            java.time.LocalDate.now().toString()
+                    );
+
+                    nuevo.setBracket("LOSERS");
+
+                    nuevo.setRonda(siguienteRonda);
+
+                    nuevo.setId_equipo_a(equipoA);
+
+                    nuevo.setId_equipo_b(equipoB);
+
+                    nuevo.setId_torneo(idTorneo);
+
+                    partidoDao.insertar(nuevo);
+                }
+            }
+        }
     }
 }

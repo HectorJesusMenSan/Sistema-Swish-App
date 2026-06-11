@@ -175,6 +175,121 @@ public class JugadorDAO {
 
         return j;
     }
+    // =====================================================
+// LISTAR JUGADORES CON ID_EQUIPO PARA RANKING
+// =====================================================
 
+    public List<Jugador> listarConEquipo() {
+
+        List<Jugador> lista = new ArrayList<>();
+
+        String sql = "SELECT * FROM jugador";
+
+        try (
+                Connection con = Conexion.getConexion(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+
+                Jugador j = new Jugador();
+
+                j.setId(rs.getInt("id"));
+
+                j.setNombre(rs.getString("nombre"));
+
+                j.setNumero(rs.getInt("numero"));
+
+                j.setPosicion(rs.getString("posicion"));
+
+                j.setId_equipo(rs.getInt("id_equipo"));
+
+                lista.add(j);
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
     
+    // =====================================================
+    // LISTAR JUGADORES DEL TORNEO ACTIVO PARA RANKING
+    // =====================================================
+    public List<Jugador> listarPorTorneoActivo() {
+
+        List<Jugador> lista = new ArrayList<>();
+
+        String sql
+                = "SELECT j.* FROM jugador j "
+                + "INNER JOIN equipo e ON j.id_equipo = e.id "
+                + "WHERE e.id_torneo = ("
+                + "  SELECT MAX(id) FROM torneo"
+                + ") "
+                + "ORDER BY j.id";
+
+        try (
+                Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                Jugador j = new Jugador();
+
+                j.setId(rs.getInt("id"));
+                j.setNombre(rs.getString("nombre"));
+                j.setNumero(rs.getInt("numero"));
+                j.setPosicion(rs.getString("posicion"));
+                j.setId_equipo(rs.getInt("id_equipo"));
+
+                lista.add(j);
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+   
+    
+    public List<Jugador> listarPorTorneo(int idTorneo) {
+
+        List<Jugador> lista = new ArrayList<>();
+
+        String sql
+                = "SELECT j.* FROM jugador j "
+                + "INNER JOIN equipo e ON j.id_equipo = e.id "
+                + "WHERE e.id_torneo = ? "
+                + "ORDER BY j.id";
+
+        try (
+                Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idTorneo);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                Jugador j = new Jugador();
+
+                j.setId(rs.getInt("id"));
+                j.setNombre(rs.getString("nombre"));
+                j.setNumero(rs.getInt("numero"));
+                j.setPosicion(rs.getString("posicion"));
+                j.setId_equipo(rs.getInt("id_equipo"));
+
+                lista.add(j);
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
 }

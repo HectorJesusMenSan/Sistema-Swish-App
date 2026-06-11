@@ -28,30 +28,43 @@ public class PartidosServerlet extends HttpServlet {
     // =====================================================
     // DO GET
     // =====================================================
+    // =====================================================
+// DO GET
+// =====================================================
     @Override
     protected void doGet(
             HttpServletRequest request,
             HttpServletResponse response
     ) throws ServletException, IOException {
 
-        // Obtener partidos
-        List<Partido> listaPartidos = partidoDao.listar();
+        // Obtener torneo activo de la sesión
+        // Si no hay sesión usar el último torneo
+        Integer idTorneoSesion
+                = (Integer) request.getSession()
+                        .getAttribute("idTorneoActivo");
 
-        // Enviar lista
-        request.setAttribute(
-                "listaPartidos",
-                listaPartidos
-        );
+        List<Partido> listaPartidos;
 
-        // Abrir JSP
+        if (idTorneoSesion != null) {
+
+            listaPartidos
+                    = partidoDao.listarPorTorneo(idTorneoSesion);
+
+        } else {
+
+            listaPartidos = partidoDao.listar();
+        }
+
+        request.setAttribute("listaPartidos", listaPartidos);
+
         request.getRequestDispatcher(
                 "pages/partidos.jsp"
         ).forward(request, response);
     }
 
-    // =====================================================
-    // DO POST
-    // =====================================================
+// =====================================================
+// DO POST
+// =====================================================
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -61,9 +74,7 @@ public class PartidosServerlet extends HttpServlet {
         String accion = request.getParameter("accion");
 
         if (accion == null) {
-
             response.sendRedirect("index.jsp");
-
             return;
         }
 
@@ -74,7 +85,7 @@ public class PartidosServerlet extends HttpServlet {
             // =========================================
             case "generarPartidos":
 
-                // Obtener equipos
+                // Obtener equipos del torneo activo
                 List<Equipo> equipos = equipoDao.listar();
 
                 // Verificar partidos existentes
@@ -90,18 +101,15 @@ public class PartidosServerlet extends HttpServlet {
 
                     if (equipos.size() % 2 != 0) {
 
-                        // Elegir aleatoriamente
                         int indiceBye
                                 = (int) (Math.random() * equipos.size());
 
                         idEquipoBye
                                 = equipos.get(indiceBye).getId();
 
-                        // Obtener el torneo del equipo bye
                         int idTorneo
                                 = equipos.get(indiceBye).getId_torneo();
 
-                        // Crear partido BYE automático
                         Partido bye = new Partido();
 
                         bye.setNombre(
@@ -110,32 +118,20 @@ public class PartidosServerlet extends HttpServlet {
                         );
 
                         bye.setEstado("FINALIZADO");
-
                         bye.setPuntos_a(0);
-
                         bye.setPuntos_b(0);
-
                         bye.setFecha(
                                 new java.sql.Date(
                                         System.currentTimeMillis()
                                 ).toString()
                         );
-
                         bye.setBracket("WINNERS");
-
                         bye.setRonda(1);
-
                         bye.setId_equipo_a(idEquipoBye);
-
-                        // 0 significa que no hay rival
                         bye.setId_equipo_b(0);
-
                         bye.setId_torneo(idTorneo);
-
                         bye.setGanador(idEquipoBye);
-
                         bye.setPerdedor(0);
-
                         bye.setBye(true);
 
                         partidoDao.insertar(bye);
@@ -146,12 +142,10 @@ public class PartidosServerlet extends HttpServlet {
                     // =========================================
                     for (int i = 0; i < equipos.size(); i++) {
 
-                        // Saltar el equipo que recibió BYE
                         if (equipos.get(i).getId() == idEquipoBye) {
                             continue;
                         }
 
-                        // Buscar siguiente equipo que no sea BYE
                         int j = i + 1;
 
                         while (j < equipos.size()
@@ -159,13 +153,11 @@ public class PartidosServerlet extends HttpServlet {
                             j++;
                         }
 
-                        // Si no hay rival disponible saltar
                         if (j >= equipos.size()) {
                             break;
                         }
 
                         Equipo equipoA = equipos.get(i);
-
                         Equipo equipoB = equipos.get(j);
 
                         Partido p = new Partido();
@@ -177,49 +169,44 @@ public class PartidosServerlet extends HttpServlet {
                         );
 
                         p.setEstado("PENDIENTE");
-
                         p.setPuntos_a(0);
-
                         p.setPuntos_b(0);
-
                         p.setFecha(
                                 new java.sql.Date(
                                         System.currentTimeMillis()
                                 ).toString()
                         );
-
                         p.setBracket("WINNERS");
-
                         p.setRonda(1);
-
                         p.setId_equipo_a(equipoA.getId());
-
                         p.setId_equipo_b(equipoB.getId());
-
                         p.setId_torneo(equipoA.getId_torneo());
-
                         p.setBye(false);
 
                         partidoDao.insertar(p);
 
-                        // Saltar al siguiente par
                         i = j;
                     }
 
-                } // cierre del if partidosExistentes.isEmpty()
+                    // Guardar torneo en sesión
+                    if (!equipos.isEmpty()) {
 
-                // Redireccionar al GET
+                        request.getSession().setAttribute(
+                                "idTorneoActivo",
+                                equipos.get(0).getId_torneo()
+                        );
+                    }
+
+                }
+
                 response.sendRedirect("PartidosServerlet");
-
                 return;
 
             // =========================================
             // DEFAULT
             // =========================================
             default:
-
                 response.sendRedirect("index.jsp");
-
                 return;
         }
     }

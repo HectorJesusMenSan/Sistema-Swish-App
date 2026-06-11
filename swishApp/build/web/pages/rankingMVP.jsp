@@ -1,165 +1,337 @@
-<%-- 
-    Document   : rankingMVP
-    Created on : 4 may 2026, 8:55:46 a.m.
-    Author     : hecto
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<%@page import="java.util.List"%>
+<%@page import="Modelo.RankingJugador"%>
+
+<%
+    RankingJugador mvp
+            = (RankingJugador) request.getAttribute("mvp");
+
+    List<RankingJugador> ranking
+            = (List<RankingJugador>) request.getAttribute("ranking");
+
+    String mejorPartido
+            = (String) request.getAttribute("mejorPartido");
+%>
+
 <!DOCTYPE html>
-
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- TÍTULO -->
-    <title>Ranking MVP</title>
+    <head>
 
-    <!-- BOOTSTRAP -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <meta charset="UTF-8">
 
-    <!-- TU CSS -->
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../CSS/base.css">
-    <link rel="stylesheet" href="../CSS/components.css">
-    <link rel="stylesheet" href="../CSS/layout.css">
-    <link rel="stylesheet" href="../CSS/tables.css">
-    <link rel="stylesheet" href="../CSS/rankingMVP.css">
+        <title>Ranking MVP</title>
 
-</head>
-<body>
-    <!-- ======================================================
-         🔹 HEADER
-    ====================================================== -->
-    <header id="header_clasificacion" class="p-3 text-center">
-        <h4 id="titulo_torneo">Ranking de Jugadores</h4>
-    </header>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+              rel="stylesheet">
 
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/base.css">
 
-    <!-- ======================================================
-         🔹 MVP DESTACADO
-    ====================================================== -->
-    <section id="ranking_destacado" class="p-3 m-3">
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/components.css">
 
-        <!-- CONTENIDO PRINCIPAL MVP -->
-        <div id="ranking_header">
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/layout.css">
 
-            <!-- FOTO -->
-            <img id="foto_mvp" src="https://via.placeholder.com/100" alt="Jugador MVP">
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/tables.css">
 
-            <!-- INFO -->
-            <div id="info_mvp">
-                <span class="label-top">MVP DEL TORNEO</span>
-                <h5 id="nombre_mvp">Carlos Rivera</h5>
-                <p id="equipo_mvp">Lakers • San Juan</p>
-            </div>
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/rankingMVP.css">
 
-        </div>
+    </head>
 
-        <!-- ESTADÍSTICAS -->
-        <div id="stats_mvp">
+    <body>
 
-            <div class="stat-mini text-center">
-                <span>245</span>
-                <p>PTS</p>
-            </div>
+        <!-- ========================================= -->
+        <!-- HEADER -->
+        <!-- ========================================= -->
 
-            <div class="stat-mini text-center">
-                <span>12</span>
-                <p>Fouls</p>
-            </div>
+        <header id="header_clasificacion"
+                class="p-3 text-center">
 
-            <div class="stat-mini text-center">
-                <span>10</span>
-                <p>GP</p>
-            </div>
+            <h4 id="titulo_torneo">
 
-            <div class="stat-mini text-center">
-                <span>24.5</span>
-                <p>PPG</p>
-            </div>
+                Ranking de Jugadores
 
-        </div>
-    </section>
+            </h4>
 
+        </header>
 
-    <!-- ======================================================
-         🔹 MEJOR PARTIDO
-    ====================================================== -->
-    <section id="mejorPartido" class="m-3 p-3 card">
+        <!-- ========================================= -->
+        <!-- MVP -->
+        <!-- ========================================= -->
 
-        <h5>Mejor partido</h5>
+        <% if (mvp != null) {%>
 
-        <p>
-            <strong>Lakers</strong> 
-            <span style="color:#f47b25;">VS</span> 
-            <strong>Bulls</strong>
-        </p>
+        <section id="ranking_destacado"
+                 class="p-3 m-3">
 
-        <p class="text-secondary">
-            Anotó 38 puntos (máximo de la temporada)
-        </p>
+            <div id="ranking_header">
 
-    </section>
+                <div id="foto_mvp">
 
+                    <%= mvp.getJugador().getNumero()%>
 
-    <!-- ======================================================
-         🔹 TABLA RANKING
-    ====================================================== -->
-    <section class="m-3">
-
-        <h5>Top 10 Rendimiento</h5>
-
-        <div id="tabla_ranking_nuevo">
-
-            <!-- ENCABEZADO -->
-            <div class="fila encabezado">
-                <div>#</div>
-                <div>Jugador</div>
-            </div>
-
-            <!-- FILA 1 -->
-            <div class="fila lider">
-                <div>1</div>
-                <div>
-                    C. Rivera 
-                    <span class="badge-mini">TOP</span>
                 </div>
+
+                <div id="info_mvp">
+
+                    <span class="label-top">
+
+                        MVP DEL TORNEO
+
+                    </span>
+
+                    <h5 id="nombre_mvp">
+
+                        <%= mvp.getJugador().getNombre()%>
+
+                    </h5>
+
+                    <p id="equipo_mvp">
+
+                        <%= mvp.getEquipo().getNombre()%>
+
+                    </p>
+
+                </div>
+
             </div>
 
-            <!-- FILA 2 -->
-            <div class="fila">
-                <div>2</div>
-                <div>J. Smith</div>
+            <div id="stats_mvp">
+
+                <div class="stat-mini text-center">
+
+                    <span>
+
+                        <%= mvp.getPuntos()%>
+
+                    </span>
+
+                    <p>PTS</p>
+
+                </div>
+
+                <div class="stat-mini text-center">
+
+                    <span>
+
+                        <%= mvp.getFaltas()%>
+
+                    </span>
+
+                    <p>Fouls</p>
+
+                </div>
+
+                <div class="stat-mini text-center">
+
+                    <span>
+
+                        <%= mvp.getPartidosJugados()%>
+
+                    </span>
+
+                    <p>GP</p>
+
+                </div>
+
+                <div class="stat-mini text-center">
+
+                    <span>
+
+                        <%= String.format("%.1f",
+                            mvp.getPromedio())%>
+
+                    </span>
+
+                    <p>PPG</p>
+
+                </div>
+
             </div>
 
-            <!-- FILA 3 -->
-            <div class="fila">
-                <div>3</div>
-                <div>M. Jordan</div>
+        </section>
+
+        <% }%>
+
+        <!-- ========================================= -->
+        <!-- MEJOR PARTIDO -->
+        <!-- ========================================= -->
+
+        <section id="mejorPartido"
+                 class="m-3 p-3 card">
+
+            <h5>
+
+                Mejor Partido
+
+            </h5>
+
+            <p>
+
+                <%= mejorPartido != null
+                        ? mejorPartido
+                        : "Sin datos disponibles"%>
+
+            </p>
+
+            <% if (mvp != null) {%>
+
+            <p class="text-secondary">
+
+                Máximo registro individual:
+                <strong>
+
+                    <%= mvp.getMejorPartidoPuntos()%>
+
+                </strong>
+
+                puntos
+
+            </p>
+
+            <% } %>
+
+        </section>
+
+        <!-- ========================================= -->
+        <!-- TABLA -->
+        <!-- ========================================= -->
+
+        <section class="m-3">
+
+            <h5>
+
+                Top 10 Rendimiento
+
+            </h5>
+
+            <div id="tabla_ranking_nuevo">
+
+                <div class="fila encabezado">
+
+                    <div>#</div>
+
+                    <div>Jugador</div>
+
+                </div>
+
+                <%
+                    if (ranking != null) {
+
+                        int pos = 1;
+
+                        for (RankingJugador r : ranking) {
+                %>
+
+                <div class="fila <%= pos == 1 ? "lider" : ""%>">
+
+                    <div>
+
+                        <%= pos%>
+
+                    </div>
+
+                    <div>
+
+                        <%= r.getJugador().getNombre()%>
+
+                        <% if (pos == 1) { %>
+
+                        <span class="badge-mini">
+
+                            TOP
+
+                        </span>
+
+                        <% }%>
+
+                        <br>
+
+                        <small>
+
+                            <%= r.getEquipo().getNombre()%>
+
+                            |
+                            Score:
+                            <%= String.format("%.1f",
+                                r.getScore())%>
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <%
+                            pos++;
+                        }
+                    }
+                %>
+
             </div>
 
-            <!-- FILA 4 -->
-            <div class="fila">
-                <div>4</div>
-                <div>S. Curry</div>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- FORMULA -->
+        <!-- ========================================= -->
+
+        <section id="criterio_box"
+                 class="m-3 p-3 text-center">
+
+            <p id="texto_criterio">
+
+                Score = Puntos - (Faltas × 0.5)
+
+            </p>
+
+        </section>
+
+        <!-- ========================================= -->
+        <!-- FOOTER -->
+        <!-- ========================================= -->
+
+        <footer id="nav_app"
+                class="d-flex justify-content-around align-items-center">
+
+            <div class="nav-item">
+
+                <a href="<%= request.getContextPath()%>/PartidosServerlet"
+                   style="text-decoration:none;color:inherit;">
+
+                    PARTIDOS
+
+                </a>
+
             </div>
 
-        </div>
+            <div class="nav-item">
 
-    </section>
+                <a href="<%= request.getContextPath()%>/ClasificacionServlet?accion=verClasificacion"
+                   style="text-decoration:none;color:inherit;">
 
+                    ESTADÍSTICAS
 
-    <!-- ======================================================
-         🔹 FORMULA
-    ====================================================== -->
-    <section id="criterio_box" class="m-3 p-3 text-center">
+                </a>
 
-        <p id="texto_criterio">
-            Score = Puntos - (Faltas × 0.5)
-        </p>
+            </div>
 
-    </section>
+            <div class="nav-item active">
 
-</body>
+                RANKING
+
+            </div>
+
+        </footer>
+
+    </body>
+
 </html>

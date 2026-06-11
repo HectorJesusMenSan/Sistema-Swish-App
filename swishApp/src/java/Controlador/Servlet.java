@@ -482,7 +482,52 @@ public class Servlet extends HttpServlet {
                                 = Integer.parseInt(idEquipoStr);
                     }
 
-                    // Eliminar jugador
+                    // Obtener jugadores actuales ANTES de eliminar
+                    List<Jugador> jugadoresActuales
+                            = j.listar_por_equipo(idEquipoEditar);
+
+                    // =========================================
+                    // VALIDAR MÍNIMO DE JUGADORES
+                    // =========================================
+                    if (jugadoresActuales.size() <= 5) {
+
+                        // No se puede eliminar, ya tiene el mínimo
+                        Equipo equipoEditar1
+                                = c.buscarPorId(idEquipoEditar);
+
+                        List<Equipo> listaEquiposJugador
+                                = c.listar();
+
+                        request.setAttribute(
+                                "errorJugadores",
+                                "❌ No se puede eliminar, el equipo necesita mínimo 5 jugadores"
+                        );
+
+                        request.setAttribute(
+                                "equipoEditar",
+                                equipoEditar1
+                        );
+
+                        request.setAttribute(
+                                "lista",
+                                jugadoresActuales
+                        );
+
+                        request.setAttribute(
+                                "lista2",
+                                listaEquiposJugador
+                        );
+
+                        request.setAttribute("irJugadores", true);
+
+                        request.getRequestDispatcher(
+                                "pages/registroDeEquipos.jsp"
+                        ).forward(request, response);
+
+                        return;
+                    }
+
+                    // Si pasa la validación, eliminar jugador
                     j.eliminar(idJugadorEliminar);
 
                     // Buscar equipo que se está editando
@@ -513,6 +558,8 @@ public class Servlet extends HttpServlet {
                             listaEquiposJugador
                     );
 
+                    request.setAttribute("irJugadores", true);
+
                     // Regresar al JSP
                     request.getRequestDispatcher(
                             "pages/registroDeEquipos.jsp"
@@ -520,7 +567,6 @@ public class Servlet extends HttpServlet {
 
                     return;
                 }
-
 
                 // =================================================
                 // ACCIÓN INVÁLIDA

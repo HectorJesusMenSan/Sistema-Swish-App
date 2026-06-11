@@ -150,9 +150,28 @@
 
                 <!-- BOTÓN -->
 
+                <!-- BOTÓN -->
+
                 <div class="mt-3">
 
-                    <% if (p.getId_equipo_b() != 0) {%>
+                    <% if (p.getId_equipo_b() != 0) { %>
+
+                    <% if ("FINALIZADO".equals(p.getEstado())) {%>
+
+                    <form action="<%= request.getContextPath()%>/ClasificacionServlet"
+                          method="get">
+
+                        <input type="hidden"
+                               name="accion"
+                               value="verClasificacion">
+
+                        <button class="btn btn-estadisticas w-100">
+                            VER ESTADÍSTICAS
+                        </button>
+
+                    </form>
+
+                    <% } else {%>
 
                     <form action="<%= request.getContextPath()%>/CapturaDeDatosServlet"
                           method="get">
@@ -172,6 +191,8 @@
                         </button>
 
                     </form>
+
+                    <% } %>
 
                     <% } else { %>
 
@@ -208,6 +229,54 @@
             <%
                 }
             %>
+            
+            <%
+                // Verificar si la Gran Final está finalizada
+                boolean granFinalFinalizada = false;
+
+                if (listaPartidos != null) {
+
+                    for (Partido p : listaPartidos) {
+
+                        if ("GRAN_FINAL".equals(p.getBracket())
+                                && "FINALIZADO".equals(p.getEstado())) {
+
+                            granFinalFinalizada = true;
+                            break;
+                        }
+                    }
+                }
+            %>
+
+            <% if (granFinalFinalizada) {%>
+
+            <div class="container mb-5">
+
+                <form action="<%= request.getContextPath()%>/TorneoServlet"
+                      method="post">
+
+                    <input type="hidden" name="accion" value="finalizarTorneo">
+
+                    <input type="hidden"
+                           name="idTorneo"
+                           value="<%
+                               Integer idSesion = (Integer) session.getAttribute("idTorneoActivo");
+                               if (idSesion != null) {
+                                   out.print(idSesion);
+                               }
+                           %>">
+
+                    <button class="btn btn-main w-100 fw-bold">
+
+                        🏆 FINALIZAR TORNEO
+
+                    </button>
+
+                </form>
+
+            </div>
+
+            <% }%>
 
         </main>
 
@@ -220,7 +289,7 @@
 
             <div class="nav-item active">
 
-                GRÁFICA
+                PARTIVOS
 
             </div>
 

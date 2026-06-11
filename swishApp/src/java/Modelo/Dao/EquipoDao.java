@@ -51,12 +51,18 @@ public class EquipoDao {
 
         List<Equipo> lista = new ArrayList<>();
 
-        String sql = "SELECT * FROM equipo";
+        // Solo equipos del último torneo registrado
+        String sql
+                = "SELECT * FROM equipo "
+                + "WHERE id_torneo = ("
+                + "  SELECT MAX(id) FROM torneo"
+                + ") "
+                + "ORDER BY id";
 
-        try(Connection con = Conexion.getConexion();
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(sql)){
-            
+        try (
+                Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
 
@@ -67,19 +73,13 @@ public class EquipoDao {
                 E.setCategoria(rs.getString("categoria"));
                 E.setOrigen(rs.getString("origen"));
                 E.setId_torneo(rs.getInt("id_torneo"));
-                E.setDerrotas(
-                        rs.getInt("derrotas")
-                );
-
-                E.setEstado(
-                        rs.getString("estado")
-                );
-                
-                
+                E.setDerrotas(rs.getInt("derrotas"));
+                E.setEstado(rs.getString("estado"));
 
                 lista.add(E);
             }
-        }catch (Exception e) {
+
+        } catch (Exception e) {
 
             e.printStackTrace();
         }
@@ -194,5 +194,47 @@ public class EquipoDao {
 
             ex.printStackTrace();
         }
+    }
+    // =====================================================
+// LISTAR EQUIPOS POR TORNEO ESPECÍFICO
+// =====================================================
+
+    public List<Equipo> listarPorTorneo(int idTorneo) {
+
+        List<Equipo> lista = new ArrayList<>();
+
+        String sql
+                = "SELECT * FROM equipo "
+                + "WHERE id_torneo = ? "
+                + "ORDER BY id";
+
+        try (
+                Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idTorneo);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                Equipo e = new Equipo();
+
+                e.setId(rs.getInt("id"));
+                e.setNombre(rs.getString("nombre"));
+                e.setCategoria(rs.getString("categoria"));
+                e.setOrigen(rs.getString("origen"));
+                e.setId_torneo(rs.getInt("id_torneo"));
+                e.setDerrotas(rs.getInt("derrotas"));
+                e.setEstado(rs.getString("estado"));
+
+                lista.add(e);
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return lista;
     }
 }

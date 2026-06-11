@@ -19,33 +19,37 @@ public class PartidoDao {
 
         List<Partido> lista = new ArrayList<>();
 
-        String sql = "SELECT * FROM partido";
+        // Solo partidos del último torneo registrado
+        String sql
+                = "SELECT * FROM partido "
+                + "WHERE id_torneo = ("
+                + "  SELECT MAX(id) FROM torneo"
+                + ") "
+                + "ORDER BY id";
 
         try (
-            Connection con = Conexion.getConexion();
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(sql)
-        ) {
+                Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
 
                 Partido p = new Partido();
 
                 p.setId(rs.getInt("id"));
-
                 p.setNombre(rs.getString("nombre"));
-
                 p.setEstado(rs.getString("estado"));
-
                 p.setPuntos_a(rs.getInt("puntos_a"));
                 p.setPuntos_b(rs.getInt("puntos_b"));
-
                 p.setFecha(rs.getString("fecha"));
-
                 p.setId_equipo_a(rs.getInt("id_equipo_a"));
                 p.setId_equipo_b(rs.getInt("id_equipo_b"));
-
                 p.setId_torneo(rs.getInt("id_torneo"));
+                p.setRonda(rs.getInt("ronda"));
+                p.setBracket(rs.getString("bracket"));
+                p.setGanador(rs.getInt("ganador"));
+                p.setPerdedor(rs.getInt("perdedor"));
+                p.setBye(rs.getBoolean("bye"));
 
                 lista.add(p);
             }
@@ -166,7 +170,7 @@ public class PartidoDao {
     }
     public void finalizarPartido(int idPartido, int ganador, int perdedor) {
 
-        String sql = "UPDATE partido SET ganador = ?, perdedor = ?, finalizado = 1, estado = 'Finalizado' WHERE id = ?";
+        String sql = "UPDATE partido SET ganador = ?, perdedor = ?, finalizado = 1, estado = 'FINALIZADO' WHERE id = ?";
 
         try (
                 Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql);) {

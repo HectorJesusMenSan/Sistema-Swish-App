@@ -4,6 +4,38 @@
    Estilos específicos para la página de ranking de jugadores.
 ====================================================== */
 
+#ranking_header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+#info_mvp {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+#info_mvp .label-top {
+    color: #f47b25;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+#info_mvp h5 {
+    margin: 0;
+    font-weight: bold;
+    color: white;
+}
+
+#info_mvp p {
+    margin: 0;
+    color: #aaa;
+    font-size: 0.85rem;
+}
+
 /* Ajustes específicos de espaciado */
 #ranking_destacado {
     margin-bottom: 1rem;
@@ -41,3 +73,4 @@
         font-size: 1rem;
     }
 }
+

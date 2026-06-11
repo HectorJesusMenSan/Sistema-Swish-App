@@ -1,211 +1,319 @@
-<%-- 
-    Document   : estadisticas
-    Created on : 4 may 2026, 8:53:42 a.m.
-    Author     : hecto
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<%@page import="java.util.List"%>
+<%@page import="Modelo.ClasificacionEquipo"%>
+
+<%
+    ClasificacionEquipo lider
+            = (ClasificacionEquipo) request.getAttribute("lider");
+
+    List<ClasificacionEquipo> clasificacion
+            = (List<ClasificacionEquipo>) request.getAttribute("clasificacion");
+%>
+
 <!DOCTYPE html>
 <html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Estadisticas del Torneo</title>
+    <head>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <meta charset="UTF-8">
 
-    <!-- TU CSS -->
-    <link rel="stylesheet" href="../CSS/base.css">
-    <link rel="stylesheet" href="../CSS/components.css">
-    <link rel="stylesheet" href="../CSS/layout.css">
-    <link rel="stylesheet" href="../CSS/tables.css">
-    <link rel="stylesheet" href="../CSS/estadisticas.css">
-</head>
+        <title>Clasificación del Torneo</title>
 
-<body>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+              rel="stylesheet">
 
-    <!-- ======================================================
-    🔹 HEADER SUPERIOR
-    ====================================================== -->
-    <header id="header_clasificacion" class="p-3 d-flex justify-content-between align-items-center">
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/base.css">
 
-        <!-- Botón regresar -->
-        <button class="btn btn-secundario">←</button>
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/components.css">
 
-        <!-- Título -->
-        <h5 id="titulo_torneo">Torneo Ráfaga</h5>
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/layout.css">
 
-        <!-- Botón buscar -->
-        <button class="btn btn-secundario">🔍</button>
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/tables.css">
 
-    </header>
+        <link rel="stylesheet"
+              href="<%= request.getContextPath()%>/CSS/estadisticas.css">
 
+    </head>
 
-    <!-- ======================================================
-    🔹 TARJETA PRINCIPAL (EQUIPO LÍDER)
-    ====================================================== -->
-    <div class="container mt-4">
+    <body>
 
-        <div id="equipo_destacado" class="p-4">
+        <!-- HEADER -->
+        <header id="header_clasificacion"
+                class="p-3 d-flex justify-content-between align-items-center">
 
-            <!-- Texto superior -->
-            <span id="label_lider">LÍDER DEL TORNEO</span>
-
-            <!-- Nombre -->
-            <h4 id="nombre_equipo_destacado">Lakers Ráfaga</h4>
-
-            <!-- Icono -->
-            <div id="icono_trofeo">🏆</div>
-
-            <!-- Estadísticas -->
-            <div class="row mt-3 text-center">
-
-                <div class="col stat-box">
-                    <span>12</span>
-                    <p>PJ</p>
-                </div>
-
-                <div class="col stat-box">
-                    <span>10-2</span>
-                    <p>V/D</p>
-                </div>
-
-                <div class="col stat-box">
-                    <span>980</span>
-                    <p>PTS</p>
-                </div>
-
-                <div class="col stat-box">
-                    <span style="color:#f47b25;">+120</span>
-                    <p>DIF</p>
-                </div>
-
-            </div>
-
-            <!-- Botón -->
-            <button class="btn btn-warning w-100 mt-3">
-                Ver perfil del equipo
+            <button class="btn btn-secundario"
+                    onclick="history.back()">
+                ←
             </button>
 
-        </div>
+            <h5 id="titulo_torneo">
+                Clasificación General
+            </h5>
 
-    </div>
+            <div style="width:40px"></div>
 
+        </header>
 
-    <!-- ======================================================
-    🔹 TABLA DE CLASIFICACIÓN
-    ====================================================== -->
-    <div class="container mt-4">
+        <!-- EQUIPO LÍDER -->
 
-        <h5>Clasificación General</h5>
+        <% if (lider != null) {%>
 
-        <table id="tabla_equipos" class="table table-dark mt-3">
+        <div class="container mt-4">
 
-            <!-- ENCABEZADO -->
-            <thead>
-                <tr>
-                    <th>Pos</th>
-                    <th>Equipo</th>
-                    <th>PJ</th>
-                    <th>V/D</th>
-                    <th>Pts+</th>
-                    <th>Pts-</th>
-                    <th>Dif</th>
-                    <th>Faltas</th>
-                </tr>
-            </thead>
+            <div id="equipo_destacado"
+                 class="p-4">
 
-            <!-- CUERPO -->
-            <tbody>
+                <span id="label_lider">
+                    LÍDER DEL TORNEO
+                </span>
 
-                <!-- FILA LÍDER -->
-                <tr class="fila-lider">
-                    <td>1</td>
-                    <td>Lakers Ráfaga</td>
-                    <td>12</td>
-                    <td>10/2</td>
-                    <td>980</td>
-                    <td>860</td>
-                    <td style="color:#f47b25;">+120</td>
-                    <td>42</td>
-                </tr>
+                <h4 id="nombre_equipo_destacado">
+                    <%= lider.getEquipo().getNombre()%>
+                </h4>
 
-                <!-- FILA 2 -->
-                <tr>
-                    <td>2</td>
-                    <td>Chicago Bulls</td>
-                    <td>12</td>
-                    <td>9/3</td>
-                    <td>840</td>
-                    <td>720</td>
-                    <td style="color:#f47b25;">+120</td>
-                    <td>38</td>
-                </tr>
+                <div id="icono_trofeo">
+                    🏆
+                </div>
 
-                <!-- FILA 3 -->
-                <tr>
-                    <td>3</td>
-                    <td>Boston Celtics</td>
-                    <td>12</td>
-                    <td>8/4</td>
-                    <td>910</td>
-                    <td>890</td>
-                    <td>+20</td>
-                    <td>55</td>
-                </tr>
+                <div class="row mt-3 text-center">
 
-                <!-- FILA 4 -->
-                <tr>
-                    <td>4</td>
-                    <td>Miami Heat</td>
-                    <td>12</td>
-                    <td>7/5</td>
-                    <td>780</td>
-                    <td>795</td>
-                    <td style="color:red;">-15</td>
-                    <td>49</td>
-                </tr>
+                    <div class="col stat-box">
 
-            </tbody>
+                        <span>
+                            <%= lider.getPj()%>
+                        </span>
 
-        </table>
+                        <p>PJ</p>
 
-    </div>
+                    </div>
 
+                    <div class="col stat-box">
 
-    <!-- ======================================================
-    🔹 CRITERIO DE EVALUACIÓN
-    ====================================================== -->
-    <div class="container mt-4 mb-5">
+                        <span>
+                            <%= lider.getVictorias()%> /
+                            <%= lider.getDerrotas()%>
+                        </span>
 
-        <div id="criterio_box" class="p-4">
+                        <p>V/D</p>
 
-            <h5>Criterio de Evaluación</h5>
+                    </div>
 
-            <p id="texto_criterio">
-                La clasificación se basa en los resultados de cada partido.
-            </p>
+                    <div class="col stat-box">
 
-            <div class="criterio-item">
-                <span>Victoria</span>
-                <span class="badge-criterio primary">2 puntos</span>
-            </div>
+                        <span>
+                            <%= lider.getPuntosFavor()%>
+                        </span>
 
-            <div class="criterio-item">
-                <span>Derrota</span>
-                <span class="badge-criterio">1 punto</span>
-            </div>
+                        <p>PTS+</p>
 
-            <div class="criterio-item">
-                <span>No presentación</span>
-                <span class="badge-criterio danger">0 puntos</span>
+                    </div>
+
+                    <div class="col stat-box">
+
+                        <span style="color:#f47b25;">
+
+                            <%= lider.getDiferencia() >= 0
+                                    ? "+" + lider.getDiferencia()
+                                    : lider.getDiferencia()%>
+
+                        </span>
+
+                        <p>DIF</p>
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
-    </div>
+        <% } %>
+
+        <!-- TABLA GENERAL -->
+
+        <div class="container mt-4">
+
+            <h5>
+                Clasificación General
+            </h5>
+
+            <table id="tabla_equipos"
+                   class="table table-dark mt-3">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Pos</th>
+                        <th>Equipo</th>
+                        <th>PJ</th>
+                        <th>V/D</th>
+                        <th>Pts+</th>
+                        <th>Pts-</th>
+                        <th>Dif</th>
+                        <th>Faltas</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <%
+                        if (clasificacion != null) {
+
+                            int posicion = 1;
+
+                            for (ClasificacionEquipo c : clasificacion) {
+                    %>
+
+                    <tr class="<%= posicion == 1 ? "fila-lider" : ""%>">
+
+                        <td>
+                            <%= posicion++%>
+                        </td>
+
+                        <td>
+                            <%= c.getEquipo().getNombre()%>
+                        </td>
+
+                        <td>
+                            <%= c.getPj()%>
+                        </td>
+
+                        <td>
+                            <%= c.getVictorias()%> /
+                            <%= c.getDerrotas()%>
+                        </td>
+
+                        <td>
+                            <%= c.getPuntosFavor()%>
+                        </td>
+
+                        <td>
+                            <%= c.getPuntosContra()%>
+                        </td>
+
+                        <td>
+
+                            <% if (c.getDiferencia() >= 0) {%>
+
+                            <span style="color:#f47b25;">
+                                +<%= c.getDiferencia()%>
+                            </span>
+
+                            <% } else {%>
+
+                            <span style="color:red;">
+                                <%= c.getDiferencia()%>
+                            </span>
+
+                            <% }%>
+
+                        </td>
+
+                        <td>
+                            <%= c.getFaltas()%>
+                        </td>
+
+                    </tr>
+
+                    <%
+                            }
+                        }
+                    %>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- CRITERIOS -->
+
+        <div class="container mt-4 mb-5">
+
+            <div id="criterio_box"
+                 class="p-4">
+
+                <h5>
+                    Criterio de Clasificación
+                </h5>
+
+                <p id="texto_criterio">
+
+                    La tabla se ordena por cantidad de victorias.
+                    En caso de empate se utiliza la diferencia
+                    de puntos.
+
+                </p>
+
+                <div class="criterio-item">
+
+                    <span>Victorias</span>
+
+                    <span class="badge-criterio primary">
+                        Prioridad 1
+                    </span>
+
+                </div>
+
+                <div class="criterio-item">
+
+                    <span>Diferencia de puntos</span>
+
+                    <span class="badge-criterio">
+                        Prioridad 2
+                    </span>
+
+                </div>
+
+                <div class="criterio-item">
+
+                    <span>Faltas acumuladas</span>
+
+                    <span class="badge-criterio danger">
+                        Estadística
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
 
 
-</body>
+        <footer id="nav_app"
+                class="d-flex justify-content-around align-items-center">
+
+            <a href="<%=request.getContextPath()%>/PartidosServerlet"
+               class="nav-item text-decoration-none">
+
+                PARTIDOS
+
+            </a>
+
+            <a href="<%=request.getContextPath()%>/ClasificacionServlet?accion=verClasificacion"
+               class="nav-item text-decoration-none active" >
+
+                ESTADÍSTICAS
+
+            </a>
+
+            <a href="<%=request.getContextPath()%>/RankingServlet?accion=verRanking"
+               class="nav-item text-decoration-none">
+
+                RANKING
+
+            </a>
+
+        </footer>
+    </body>
+
 </html>
