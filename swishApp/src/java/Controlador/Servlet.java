@@ -40,6 +40,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import Modelo.Usuario;
+import jakarta.servlet.http.HttpSession;
+
 
 @WebServlet("/Servlet")
 public class Servlet extends HttpServlet {
@@ -177,7 +180,13 @@ public class Servlet extends HttpServlet {
             }
             
              //Inserta torneo en BD
-            t_dao.insertar(t);
+            HttpSession session = request.getSession();
+            Usuario usuarioActivo
+                    = (Usuario) session.getAttribute("usuarioActivo");
+
+            int idUsuario = usuarioActivo != null ? usuarioActivo.getId() : 0;
+
+            t_dao.insertarConUsuario(t, idUsuario);
 
             //Redirecciona a registro
             response.sendRedirect("Servlet?accion=irRegistro");

@@ -14,6 +14,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import Modelo.Usuario;
+import jakarta.servlet.http.HttpSession;
+
+
 @WebServlet("/TorneoServlet")
 public class TorneoServlet extends HttpServlet {
 
@@ -44,7 +48,13 @@ public class TorneoServlet extends HttpServlet {
             // =========================================
             case "verTorneos":
 
-                List<Torneo> lista = torneoDao.listar();
+                HttpSession session = request.getSession();
+                Usuario usuarioActivo
+                        = (Usuario) session.getAttribute("usuarioActivo");
+
+                int idUsuario = usuarioActivo != null ? usuarioActivo.getId() : 0;
+
+                List<Torneo> lista = torneoDao.listarPorUsuario(idUsuario);
 
                 request.setAttribute("listaTorneos", lista);
 

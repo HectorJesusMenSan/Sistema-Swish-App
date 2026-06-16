@@ -221,4 +221,49 @@ public class TorneoDao {
             e.printStackTrace();
         }
     }
+    public void insertarConUsuario(Torneo t, int idUsuario) {
+        String sql
+                = "INSERT INTO torneo(nombre, tipo, estado, fecha_inicio, id_usuario) "
+                + "VALUES(?, ?, ?, ?, ?)";
+
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, t.getNombre());
+            ps.setString(2, t.getTipo());
+            ps.setString(3, t.getEstado());
+            ps.setString(4, t.getFecha_inicio());
+            ps.setInt(5, idUsuario);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Torneo> listarPorUsuario(int idUsuario) {
+        List<Torneo> lista = new ArrayList<>();
+
+        String sql
+                = "SELECT * FROM torneo WHERE id_usuario = ? ORDER BY id DESC";
+
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Torneo t = new Torneo();
+                t.setId(rs.getInt("id"));
+                t.setNombre(rs.getString("nombre"));
+                t.setEstado(rs.getString("estado"));
+                t.setFecha_inicio(rs.getString("fecha_inicio"));
+                lista.add(t);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
 }
