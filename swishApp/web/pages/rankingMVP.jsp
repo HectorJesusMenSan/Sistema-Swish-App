@@ -43,7 +43,7 @@
 
         <link rel="stylesheet"
               href="<%= request.getContextPath()%>/CSS/rankingMVP.css">
-
+                <link rel="stylesheet" href="<%= request.getContextPath()%>/CSS/headerNav.css">
     </head>
 
     <body>
@@ -51,17 +51,24 @@
         <!-- ========================================= -->
         <!-- HEADER -->
         <!-- ========================================= -->
+        <div class="header-nav">
 
-        <header id="header_clasificacion"
-                class="p-3 text-center">
+            <a href="<%= request.getContextPath()%>/ClasificacionServlet?accion=verClasificacion"
+               class="btn-nav-izq">
+                ← Volver
+            </a>
 
-            <h4 id="titulo_torneo">
+            <span class="header-nav-titulo">Ranking MVP</span>
 
-                Ranking de Jugadores
+            <form action="<%= request.getContextPath()%>/PerfilServlet"
+                  method="post" class="form-nav">
+                <input type="hidden" name="accion" value="cerrarSesion">
+                <button type="submit" class="btn-nav-der">
+                    Cerrar sesión
+                </button>
+            </form>
 
-            </h4>
-
-        </header>
+        </div>
 
         <!-- ========================================= -->
         <!-- MVP -->
@@ -294,43 +301,6 @@
             </p>
 
         </section>
-
-        <!-- ========================================= -->
-        <!-- FOOTER -->
-        <!-- ========================================= -->
-
-        <footer id="nav_app"
-                class="d-flex justify-content-around align-items-center">
-
-            <div class="nav-item">
-
-                <a href="<%= request.getContextPath()%>/PartidosServerlet"
-                   style="text-decoration:none;color:inherit;">
-
-                    PARTIDOS
-
-                </a>
-
-            </div>
-
-            <div class="nav-item">
-
-                <a href="<%= request.getContextPath()%>/ClasificacionServlet?accion=verClasificacion"
-                   style="text-decoration:none;color:inherit;">
-
-                    ESTADÍSTICAS
-
-                </a>
-
-            </div>
-
-            <div class="nav-item active">
-
-                RANKING
-
-            </div>
-
-        </footer>
 
     </body>
 

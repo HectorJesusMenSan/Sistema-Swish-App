@@ -18,6 +18,7 @@ import java.util.List;
  * @author hector
  */
 public class EquipoDao {
+
     public void insertar(Equipo E) {
 
         String sql
@@ -26,7 +27,15 @@ public class EquipoDao {
                 + ") VALUES(?, ?, ?, ?, ?, ?)";
 
         try (
-                Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+                Connection con = Conexion.getConexion(); // FIX: se agrega Statement.RETURN_GENERATED_KEYS.
+                // Sin esto, "E" se quedaba con id=0 despues de
+                // insertar, porque nunca se leia el id real que
+                // genero la base de datos. Eso rompia el rastreo
+                // de "equipo activo" en el Servlet (guardaba 0 en
+                // sesion en vez del id real del equipo recien
+                // creado).
+                 PreparedStatement ps = con.prepareStatement(
+                        sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, E.getNombre());
 
@@ -42,11 +51,23 @@ public class EquipoDao {
 
             ps.executeUpdate();
 
+            // NUEVO: leer el id generado y dejarlo dentro de "E",
+            // para que quien llamo a insertar() pueda usar
+            // E.getId() inmediatamente despues, ya con el id real.
+            try (ResultSet rsKeys = ps.getGeneratedKeys()) {
+
+                if (rsKeys.next()) {
+
+                    E.setId(rsKeys.getInt(1));
+                }
+            }
+
         } catch (Exception e) {
 
             e.printStackTrace();
         }
     }
+
     public List<Equipo> listar() {
 
         List<Equipo> lista = new ArrayList<>();
@@ -86,6 +107,7 @@ public class EquipoDao {
 
         return lista;
     }
+
     public Equipo buscarPorId(int id) {
 
         Equipo e = new Equipo();
@@ -124,7 +146,7 @@ public class EquipoDao {
 
         return e;
     }
-    
+
     public void actualizar(Equipo e) {
 
         String sql
@@ -147,6 +169,7 @@ public class EquipoDao {
             ex.printStackTrace();
         }
     }
+
     public void actualizarDerrotas(Equipo e) {
 
         try {
@@ -178,6 +201,7 @@ public class EquipoDao {
             ex.printStackTrace();
         }
     }
+
     public void eliminar(int id) {
 
         String sql

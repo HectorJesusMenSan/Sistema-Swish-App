@@ -1,33 +1,29 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Modelo;
 
-/**
- *
- * @author hector
- */
 public class Torneo {
-    // Atributos
+
     private int id;
     private String nombre;
     private String tipo;
     private String estado;
-
     private String fecha_inicio;
-    
-    //Constructores
-    public Torneo(int id, String nombre, String tipo, String fecha_inicio){
+    private int id_usuario;
+
+    public Torneo() {
+    }
+
+    public Torneo(int id, String nombre, String tipo,
+            String estado, String fecha_inicio,
+            int id_usuario) {
+
         this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
+        this.estado = estado;
         this.fecha_inicio = fecha_inicio;
-        
+        this.id_usuario = id_usuario;
     }
-    public Torneo(){}
-    
-    //Metodos de acceso
+
     public int getId() {
         return id;
     }
@@ -36,13 +32,14 @@ public class Torneo {
         this.id = id;
     }
 
-    public String getEstado() {
-        return estado;
+    public int getId_usuario() {
+        return id_usuario;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setId_usuario(int id_usuario) {
+        this.id_usuario = id_usuario;
     }
+
     public String getNombre() {
         return nombre;
     }
@@ -59,6 +56,14 @@ public class Torneo {
         this.tipo = tipo;
     }
 
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
     public String getFecha_inicio() {
         return fecha_inicio;
     }
@@ -66,5 +71,4 @@ public class Torneo {
     public void setFecha_inicio(String fecha_inicio) {
         this.fecha_inicio = fecha_inicio;
     }
-    
 }

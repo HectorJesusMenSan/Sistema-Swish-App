@@ -93,4 +93,41 @@ public class UsuarioDao {
 
         return false;
     }
+    
+    // =====================================================
+// ACTUALIZAR NOMBRE Y USERNAME
+// =====================================================
+    public void actualizar(Usuario u) {
+        String sql
+                = "UPDATE usuario SET nombre=?, username=? WHERE id=?";
+
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, u.getNombre());
+            ps.setString(2, u.getUsername());
+            ps.setInt(3, u.getId());
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+// =====================================================
+// ACTUALIZAR PASSWORD
+// =====================================================
+    public void actualizarPassword(int idUsuario, String hashNuevo) {
+        String sql
+                = "UPDATE usuario SET password=? WHERE id=?";
+
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, hashNuevo);
+            ps.setInt(2, idUsuario);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -10,15 +10,11 @@
  * 
  * También incluye algunas validaciones para evitar errores
  * cuando NO existen equipos o jugadores registrados.
- 
----Al momento de editar no funciinan las validaciones de minimo y maximo en jugadores
 
  */
-
 package Controlador;
 
 // ================= IMPORTACIONES =================
-
 // Clases modelo
 import Modelo.Equipo;
 import Modelo.Jugador;
@@ -43,16 +39,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import Modelo.Usuario;
 import jakarta.servlet.http.HttpSession;
 
-
 @WebServlet("/Servlet")
 public class Servlet extends HttpServlet {
 
     // ================= OBJETOS DAO =================
     // Permiten acceder a la base de datos
-
     EquipoDao c = new EquipoDao();
     JugadorDAO j = new JugadorDAO();
     TorneoDao t_dao = new TorneoDao();
+
     // =========================================================
     // ======================= DO GET ===========================
     // =========================================================
@@ -65,8 +60,8 @@ public class Servlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
-                         throws ServletException, IOException {
+            HttpServletResponse response)
+            throws ServletException, IOException {
 
         // Obtiene el parámetro accion de la URL
         // Ejemplo:
@@ -91,13 +86,34 @@ public class Servlet extends HttpServlet {
                             = request.getParameter("mostrarJugadores");
 
                     // Solo mostrar jugadores si viene del registro
-                    if ("true".equals(mostrarJugadores)&& !lista_equipos.isEmpty()) {
+                    if ("true".equals(mostrarJugadores) && !lista_equipos.isEmpty()) {
 
-                        Equipo E = lista_equipos.get(lista_equipos.size() - 1);
+                        // ANTES: se usaba "el ultimo equipo de la
+                        // lista" para saber de quien mostrar los
+                        // jugadores. AHORA: se usa el equipo activo
+                        // guardado en sesion (idEquipoActivo), para
+                        // no mezclar jugadores de equipos distintos
+                        // cuando se esta editando un equipo que NO
+                        // es el ultimo de la lista.
+                        Integer idEquipoActivo
+                                = (Integer) request.getSession()
+                                        .getAttribute("idEquipoActivo");
+
+                        Equipo E = (idEquipoActivo != null && idEquipoActivo > 0)
+                                ? c.buscarPorId(idEquipoActivo)
+                                : lista_equipos.get(lista_equipos.size() - 1);
 
                         List<Jugador> jugadores = j.listar_por_equipo(E.getId());
 
                         request.setAttribute("lista", jugadores);
+
+                        // FIX: esta bandera faltaba. Sin ella, al
+                        // volver aqui despues de guardar un jugador
+                        // (este caso llega via redirect), pasoActual
+                        // en el JSP volvia a 1 y bloqueaba la
+                        // seccion de jugadores -> por eso solo
+                        // dejaba agregar UN jugador.
+                        request.setAttribute("irJugadores", true);
 
                     } else {
 
@@ -108,11 +124,11 @@ public class Servlet extends HttpServlet {
                     request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
 
                     break;
-                    
+
                 //Redirecion a pestaña de partidos.
                 case "irPartidos":
                     request.getRequestDispatcher("pages/partidos.jsp").forward(request, response);
-                
+
                 // =================================================
                 // ACCIÓN NO VÁLIDA
                 // =================================================
@@ -125,29 +141,24 @@ public class Servlet extends HttpServlet {
         }
     }
 
-
-
     // =========================================================
     // ======================= DO POST ==========================
     // =========================================================
     //Se ejecuta cuando enviamos formulario method="POST"
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
-                          throws ServletException, IOException {
-
-
+            HttpServletResponse response)
+            throws ServletException, IOException {
 
         // =====================================================
         // OBTENER PARÁMETROS
         // =====================================================
-
         //Obtiene el tipo de torneo enviado desde el formulario         
         String tipoTorneo = request.getParameter("tipoTorneo");
-        
+
         //Obtiene la acción del formulario  
         String accion1 = request.getParameter("accion");
-       
+
         //Objeto torneo
         Torneo t = new Torneo();
 
@@ -155,7 +166,6 @@ public class Servlet extends HttpServlet {
         // REGISTRAR TORNEO
         // =====================================================
         //Si tipoTorneo tiene valor significa que se registrará un torneo
-         
         if (tipoTorneo != null) {
             // ================================================
             // TORNEO RÁFAGA
@@ -165,12 +175,10 @@ public class Servlet extends HttpServlet {
                 t.setNombre("Rafaga");
 
                 t.setEstado("Activo");
-                
-                 // Guarda fecha actual                 
-                t.setFecha_inicio(new java.sql.Date(System.currentTimeMillis()).toString());
-            }
 
-            // ================================================
+                // Guarda fecha actual                 
+                t.setFecha_inicio(new java.sql.Date(System.currentTimeMillis()).toString());
+            } // ================================================
             // TORNEO LIGA
             // ================================================
             else {
@@ -178,8 +186,8 @@ public class Servlet extends HttpServlet {
                 t.setEstado("Activo");
                 t.setFecha_inicio(new java.sql.Date(System.currentTimeMillis()).toString());
             }
-            
-             //Inserta torneo en BD
+
+            //Inserta torneo en BD
             HttpSession session = request.getSession();
             Usuario usuarioActivo
                     = (Usuario) session.getAttribute("usuarioActivo");
@@ -193,8 +201,6 @@ public class Servlet extends HttpServlet {
             return;
         }
 
-
-
         // =====================================================
         // VERIFICAR ACCIONES POST
         // =====================================================
@@ -207,7 +213,7 @@ public class Servlet extends HttpServlet {
                 case "guardarEquipo":
                     //Crear objeto equipo
                     Equipo e = new Equipo();
-                   
+
                     //Obtener datos del formulario                     
                     e.setNombre(request.getParameter("nombre"));
                     e.setCategoria(request.getParameter("categoria"));
@@ -225,7 +231,7 @@ public class Servlet extends HttpServlet {
                     Torneo torneoActivo = t_dao.obtenerUltimo();
 
                     e.setId_torneo(torneoActivo.getId());
-                    
+
                     String idStr = request.getParameter("id");
 
                     int idEquipo = 0;
@@ -247,23 +253,54 @@ public class Servlet extends HttpServlet {
                         e.setDerrotas(0);
                         c.insertar(e);
                     }
-                    
+
                     //Obtener lista actualizada de equipos                    
                     List<Equipo> lista2 = c.listar();
 
+                    // RESPALDO: si era un equipo NUEVO (idEquipo
+                    // era 0) y despues de insertar() "e.getId()"
+                    // SIGUE en 0, significa que EquipoDao.insertar
+                    // no esta devolviendo el id generado dentro de
+                    // "e". Lo inferimos como el ultimo equipo de
+                    // la lista recien actualizada (asumiendo que
+                    // listar() viene ordenado por id ascendente,
+                    // igual que ya asumia el resto del codigo
+                    // original con "el ultimo equipo de la lista").
+                    if (idEquipo == 0 && e.getId() <= 0 && !lista2.isEmpty()) {
 
+                        Equipo ultimoInsertado = lista2.get(lista2.size() - 1);
 
-                    
+                        e.setId(ultimoInsertado.getId());
+                    }
+
+                    // NUEVO: guardar en sesion cual es el equipo
+                    // activo. Asi, guardarJugador/nuevoEquipo saben
+                    // exactamente a cual equipo pertenecen los
+                    // siguientes jugadores (antes se adivinaba
+                    // usando "el ultimo equipo de la lista", lo
+                    // cual fallaba al editar un equipo viejo).
+                    if (e.getId() > 0) {
+
+                        request.getSession().setAttribute("idEquipoActivo", e.getId());
+
+                    } else {
+
+                        // Si aun asi no se pudo determinar un id
+                        // valido, mejor no dejar nada en sesion
+                        // que pueda ensuciar el siguiente equipo.
+                        request.getSession().removeAttribute("idEquipoActivo");
+                    }
+
                     //Obtener jugadores del equipo                    
                     List<Jugador> lista = j.listar_por_equipo(e.getId());
-                    
+
                     //Enviar listas al JSP                    
                     request.setAttribute("lista", lista);
                     request.setAttribute("lista2", lista2);
-               
+
                     //Variable para mostrar modal                    
-                    request.setAttribute("equipoGuardado",true);
-                    
+                    request.setAttribute("equipoGuardado", true);
+
                     //Forward al JSP                   
                     request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
                     return;
@@ -295,13 +332,28 @@ public class Servlet extends HttpServlet {
                         // Obtener posición
                         jugador.setPosicion(request.getParameter("posicion"));
 
-                        // Obtener equipos registrados
-                        List<Equipo> lista_equipos = c.listar();
+                        // ANTES: se usaba "el ultimo equipo de la
+                        // lista completa" para saber a cual equipo
+                        // pertenece este jugador. AHORA: se usa el
+                        // equipo activo guardado en sesion
+                        // (seteado en guardarEquipo/editarEquipo).
+                        // Esto evita que, al editar un equipo que
+                        // NO es el ultimo creado, los jugadores
+                        // nuevos se agreguen al equipo equivocado.
+                        Integer idEquipoActivo
+                                = (Integer) request.getSession()
+                                        .getAttribute("idEquipoActivo");
 
-                        // VALIDACIÓN IMPORTANTE: Verifica si existen equipos
-                        if (!lista_equipos.isEmpty()) {
-                            // Obtiene último equipo
-                            Equipo E = lista_equipos.get(lista_equipos.size() - 1);
+                        // OJO: tambien se descarta si es <= 0 (no
+                        // solo null), por si alguna vez quedo un 0
+                        // guardado en sesion de un insert que no
+                        // devolvio el id generado.
+                        Equipo E = (idEquipoActivo != null && idEquipoActivo > 0)
+                                ? c.buscarPorId(idEquipoActivo)
+                                : null;
+
+                        // VALIDACIÓN IMPORTANTE: Verifica si hay un equipo activo
+                        if (E != null) {
 
                             // ✅ VERIFICAR SI EL NÚMERO YA EXISTE EN ESTE EQUIPO
                             if (j.existeNumeroEnEquipo(numero, E.getId())) {
@@ -329,22 +381,26 @@ public class Servlet extends HttpServlet {
 
                             // Asignar ID equipo al jugador
                             jugador.setId_equipo(E.getId());
-                            
-                            // Obtener jugadores actuales del equipo
-                            List<Jugador> jugadoresEquipo = j.listar_por_equipo(E.getId());
 
                             // Guardar jugador
                             j.insertar(jugador);
 
                             // Redireccionar
-                            response.sendRedirect( "Servlet?accion=irRegistro&mostrarJugadores=true#seccion_jugadores");
+                            response.sendRedirect("Servlet?accion=irRegistro&mostrarJugadores=true#seccion_jugadores");
                         } else {
-                            // Si NO existen equipos
-                            request.setAttribute("error", "❌ Primero debes registrar un equipo");
+                            // Si NO hay equipo activo
+                            // (antes esto se guardaba en el
+                            // atributo "error", que el JSP nunca
+                            // mostraba; ahora usa "errorJugadores",
+                            // que si se pinta en pantalla)
+                            request.setAttribute("errorJugadores", "❌ Primero debes registrar un equipo");
+                            request.setAttribute("lista2", c.listar());
                             request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
                         }
                     } catch (NumberFormatException ex) {
                         request.setAttribute("errorNumero", "❌ El número debe ser un valor válido");
+                        request.setAttribute("irJugadores", true);
+                        request.setAttribute("lista2", c.listar());
                         request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
                     }
                     return;
@@ -353,30 +409,41 @@ public class Servlet extends HttpServlet {
                 // =================================================
                 case "nuevoEquipo":
 
-                    // Obtener equipos
-                    List<Equipo> lista2_nuevo = c.listar();
+                    // ANTES: se validaba el conteo de jugadores de
+                    // "el ultimo equipo de la lista". AHORA: se usa
+                    // el equipo activo en sesion.
+                    Integer idEquipoActivoNuevo
+                            = (Integer) request.getSession()
+                                    .getAttribute("idEquipoActivo");
 
-                    // Verificar si existen equipos
-                    if (!lista2_nuevo.isEmpty()) {
+                    if (idEquipoActivoNuevo != null && idEquipoActivoNuevo > 0) {
 
-                        // Obtener último equipo
-                        Equipo ultimoEquipo = lista2_nuevo.get(lista2_nuevo.size() - 1);
+                        Equipo equipoActivo = c.buscarPorId(idEquipoActivoNuevo);
 
                         // Obtener jugadores
-                        List<Jugador> jugadoresEquipo = j.listar_por_equipo(ultimoEquipo.getId());
+                        List<Jugador> jugadoresEquipo = j.listar_por_equipo(idEquipoActivoNuevo);
 
                         // Validar mínimo
                         if (jugadoresEquipo.size() < 5) {
 
-                            request.setAttribute("errorJugadores", "❌ El equipo necesita mínimo 5 jugadores");
+                            // OJO: este mensaje es sobre el equipo
+                            // ANTERIOR (el que aun no llega al
+                            // minimo), no sobre un equipo nuevo.
+                            // Se incluye su nombre para que no se
+                            // confunda con la lista de un equipo
+                            // recien creado (que siempre empieza
+                            // vacia).
+                            request.setAttribute("errorJugadores",
+                                    "❌ \"" + equipoActivo.getNombre()
+                                    + "\" necesita mínimo 5 jugadores antes de poder registrar otro equipo");
 
                             request.setAttribute("lista", jugadoresEquipo);
 
-                            request.setAttribute("lista2", lista2_nuevo);
+                            request.setAttribute("lista2", c.listar());
 
-                            request.setAttribute("equipoEditar",ultimoEquipo);
+                            request.setAttribute("equipoEditar", equipoActivo);
 
-                            request.setAttribute("irJugadores",true);
+                            request.setAttribute("irJugadores", true);
 
                             request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
                             return;
@@ -385,34 +452,45 @@ public class Servlet extends HttpServlet {
                         // Validar máximo
                         if (jugadoresEquipo.size() > 12) {
 
-                            request.setAttribute("errorJugadores", "❌ El equipo supera el máximo de 12 jugadores");
+                            request.setAttribute("errorJugadores",
+                                    "❌ \"" + equipoActivo.getNombre()
+                                    + "\" supera el máximo de 12 jugadores");
 
                             request.setAttribute("lista", jugadoresEquipo);
 
-                            request.setAttribute("lista2",lista2_nuevo);
+                            request.setAttribute("lista2", c.listar());
 
-                            request.setAttribute("equipoEditar",ultimoEquipo);
+                            request.setAttribute("equipoEditar", equipoActivo);
 
-                            request.setAttribute("irJugadores",true);
+                            request.setAttribute("irJugadores", true);
 
                             request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
                             return;
                         }
                     }
 
+                    // Validacion superada (o no habia equipo
+                    // activo todavia) -> se libera el equipo
+                    // activo para que el siguiente equipo/jugador
+                    // no se mezcle con este.
+                    request.getSession().removeAttribute("idEquipoActivo");
+
                     // Limpiar jugadores
-                    request.setAttribute("lista",null);
+                    request.setAttribute("lista", null);
 
                     // Enviar equipos
-                    request.setAttribute("lista2",lista2_nuevo);
+                    request.setAttribute("lista2", c.listar());
 
-                    // Mostrar modal
-                    request.setAttribute("jugadoresGuardado",true);
+                    // Mostrar modal (esto SOLO controla el modal;
+                    // el paso visible en el JSP ya no depende de
+                    // esta bandera, porque aqui justo queremos
+                    // pasar a paso 1, no quedarnos en paso 2)
+                    request.setAttribute("jugadoresGuardado", true);
 
                     request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
 
                     return;
-                    
+
                 case "editarEquipo":
 
                     // Obtener id del equipo
@@ -427,6 +505,12 @@ public class Servlet extends HttpServlet {
                     // Obtener todos los equipos
                     List<Equipo> listaEquipos = c.listar();
 
+                    // NUEVO: marcar este equipo como el activo en
+                    // sesion, para que guardarJugador/nuevoEquipo
+                    // trabajen sobre ESTE equipo (y no sobre "el
+                    // ultimo de la lista").
+                    request.getSession().setAttribute("idEquipoActivo", idEquipo1);
+
                     // Enviar datos al JSP
                     request.setAttribute("equipoEditar", equipoEditar);
 
@@ -434,13 +518,36 @@ public class Servlet extends HttpServlet {
 
                     request.setAttribute("lista2", listaEquipos);
 
+                    // NUEVO: validar minimo/maximo tambien aqui.
+                    // Antes esto solo se validaba en "nuevoEquipo",
+                    // por eso al editar no se respetaban estas
+                    // reglas. Si el conteo esta mal, se manda a
+                    // paso de jugadores (irJugadores=true) para
+                    // que se pueda corregir ahi mismo.
+                    if (jugadoresEquipo.size() < 5) {
+
+                        request.setAttribute("errorJugadores",
+                                "❌ \"" + equipoEditar.getNombre()
+                                + "\" necesita mínimo 5 jugadores");
+
+                        request.setAttribute("irJugadores", true);
+
+                    } else if (jugadoresEquipo.size() > 12) {
+
+                        request.setAttribute("errorJugadores",
+                                "❌ \"" + equipoEditar.getNombre()
+                                + "\" supera el máximo de 12 jugadores");
+
+                        request.setAttribute("irJugadores", true);
+                    }
+
                     // Ir al JSP
                     request.getRequestDispatcher(
                             "pages/registroDeEquipos.jsp"
                     ).forward(request, response);
 
                     return;
-                    
+
                 case "eliminarEquipo":
 
                     String idEliminarStr = request.getParameter("id");
@@ -454,16 +561,29 @@ public class Servlet extends HttpServlet {
 
                     c.eliminar(idEquipoEliminar);
 
-                    List<Equipo> listaEquiposEliminar= c.listar();
+                    // NUEVO: si el equipo activo en sesion era el
+                    // que se acaba de eliminar, hay que soltarlo
+                    // (ya no existe en la BD).
+                    Integer idActivoActual
+                            = (Integer) request.getSession()
+                                    .getAttribute("idEquipoActivo");
 
-                    request.setAttribute("lista2",listaEquiposEliminar);
+                    if (idActivoActual != null
+                            && idActivoActual == idEquipoEliminar) {
 
-                    request.setAttribute("lista",null);
+                        request.getSession().removeAttribute("idEquipoActivo");
+                    }
+
+                    List<Equipo> listaEquiposEliminar = c.listar();
+
+                    request.setAttribute("lista2", listaEquiposEliminar);
+
+                    request.setAttribute("lista", null);
 
                     request.getRequestDispatcher("pages/registroDeEquipos.jsp").forward(request, response);
 
                     return;
-                
+
                 case "eliminarJugador": {
 
                     // Obtener id del jugador
@@ -490,6 +610,11 @@ public class Servlet extends HttpServlet {
                         idEquipoEditar
                                 = Integer.parseInt(idEquipoStr);
                     }
+
+                    // NUEVO: mantener sincronizado el equipo
+                    // activo en sesion con el equipo al que
+                    // pertenece el jugador que se esta eliminando.
+                    request.getSession().setAttribute("idEquipoActivo", idEquipoEditar);
 
                     // Obtener jugadores actuales ANTES de eliminar
                     List<Jugador> jugadoresActuales

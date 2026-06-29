@@ -122,7 +122,7 @@ public class CapturaDeDatosServlet extends HttpServlet {
                 int puntos = Integer.parseInt(request.getParameter("puntos"));
 
                 String equipo = request.getParameter("equipo");
-                
+
                 int faltasActuales = estDao.obtenerFaltas(idPartidoP, idJugadorP);
 
                 if (faltasActuales >= 5) {
@@ -152,7 +152,7 @@ public class CapturaDeDatosServlet extends HttpServlet {
                 int idJugadorF = Integer.parseInt(request.getParameter("idJugador"));
 
                 String equipoF = request.getParameter("equipo");
-                
+
                 int faltasActuales1 = estDao.obtenerFaltas(idPartidoF, idJugadorF);
 
                 if (faltasActuales1 >= 5) {
@@ -168,7 +168,7 @@ public class CapturaDeDatosServlet extends HttpServlet {
                 response.sendRedirect("CapturaDeDatosServlet?accion=abrirPartido&idPartido=" + idPartidoF + "&equipo=" + equipoF);
 
                 return;
-                
+
             // =========================================
 // FINALIZAR PARTIDO
 // =========================================
@@ -283,7 +283,7 @@ public class CapturaDeDatosServlet extends HttpServlet {
                 return;
         }
     }
-    
+
 // =====================================================
 // GENERAR SIGUIENTE PARTIDO
 // =====================================================
@@ -291,8 +291,19 @@ public class CapturaDeDatosServlet extends HttpServlet {
 
         int idTorneo = partidoFinalizado.getId_torneo();
 
-        // Si terminó la gran final, el torneo acabó
+        // =========================================
+        // GRAN FINAL 2 (DESEMPATE) -> TORNEO TERMINA
+        // Es el partido definitivo, no genera nada mas
+        // =========================================
+        if ("GRAN_FINAL_2".equals(partidoFinalizado.getBracket())) {
+            return;
+        }
+
+        // =========================================
+        // GRAN FINAL -> EVALUAR SI HACE FALTA DESEMPATE
+        // =========================================
         if ("GRAN_FINAL".equals(partidoFinalizado.getBracket())) {
+            procesarGranFinal(partidoFinalizado);
             return;
         }
 
@@ -303,6 +314,13 @@ public class CapturaDeDatosServlet extends HttpServlet {
 
         // Equipos con partido pendiente asignado
         List<Integer> ocupados = new ArrayList<>();
+
+        // Bracket donde quedo pendiente cada equipo ocupado
+        // (lo usamos para saber si YA hay un partido
+        // pendiente dentro de WINNERS o dentro de LOSERS)
+        boolean hayPendientesWinners = false;
+
+        boolean hayPendientesLosers = false;
 
         for (Partido p : partidos) {
 
@@ -316,6 +334,12 @@ public class CapturaDeDatosServlet extends HttpServlet {
 
             if (p.getId_equipo_b() != 0) {
                 ocupados.add(p.getId_equipo_b());
+            }
+
+            if ("WINNERS".equals(p.getBracket())) {
+                hayPendientesWinners = true;
+            } else if ("LOSERS".equals(p.getBracket())) {
+                hayPendientesLosers = true;
             }
         }
 
@@ -373,6 +397,32 @@ public class CapturaDeDatosServlet extends HttpServlet {
             }
 
             disponiblesLosers.add(e.getId());
+        }
+
+        // =========================================
+        // TOTAL DE EQUIPOS ACTIVOS POR BRACKET
+        // (ocupados + disponibles, sirve para decidir
+        // si conviene dar BYE a un sobrante)
+        // =========================================
+        int totalActivosWinners = 0;
+
+        int totalActivosLosers = 0;
+
+        for (Equipo e : todosEquipos) {
+
+            if (e.getId_torneo() != idTorneo) {
+                continue;
+            }
+
+            if (!"ACTIVO".equals(e.getEstado())) {
+                continue;
+            }
+
+            if (e.getDerrotas() == 0) {
+                totalActivosWinners++;
+            } else if (e.getDerrotas() == 1) {
+                totalActivosLosers++;
+            }
         }
 
         // =========================================
@@ -464,7 +514,9 @@ public class CapturaDeDatosServlet extends HttpServlet {
         // =========================================
         if (disponiblesWinners.size() >= 2) {
 
-            for (int i = 0; i < disponiblesWinners.size() - 1; i += 2) {
+            int i;
+
+            for (i = 0; i + 1 < disponiblesWinners.size(); i += 2) {
 
                 int equipoA = disponiblesWinners.get(i);
 
@@ -505,6 +557,39 @@ public class CapturaDeDatosServlet extends HttpServlet {
                     partidoDao.insertar(nuevo);
                 }
             }
+
+            // =========================================
+            // SOBRANTE IMPAR EN WINNERS
+            // =========================================
+            if (i < disponiblesWinners.size()
+                    && !hayPendientesWinners) {
+
+                int sobranteWinners = disponiblesWinners.get(i);
+
+                darByeSiCorresponde(
+                        sobranteWinners,
+                        "WINNERS",
+                        siguienteRonda,
+                        idTorneo,
+                        totalActivosLosers,
+                        partidos
+                );
+            }
+
+        } else if (disponiblesWinners.size() == 1
+                && !hayPendientesWinners) {
+
+            // No hay con quien emparejar dentro de WINNERS
+            int sobranteWinners = disponiblesWinners.get(0);
+
+            darByeSiCorresponde(
+                    sobranteWinners,
+                    "WINNERS",
+                    siguienteRonda,
+                    idTorneo,
+                    totalActivosLosers,
+                    partidos
+            );
         }
 
         // =========================================
@@ -513,11 +598,13 @@ public class CapturaDeDatosServlet extends HttpServlet {
         // =========================================
         if (disponiblesLosers.size() >= 2) {
 
-            for (int i = 0; i < disponiblesLosers.size() - 1; i += 2) {
+            int j;
 
-                int equipoA = disponiblesLosers.get(i);
+            for (j = 0; j + 1 < disponiblesLosers.size(); j += 2) {
 
-                int equipoB = disponiblesLosers.get(i + 1);
+                int equipoA = disponiblesLosers.get(j);
+
+                int equipoB = disponiblesLosers.get(j + 1);
 
                 boolean existe = partidoDao.existePartidoPendiente(
                         equipoA,
@@ -554,6 +641,223 @@ public class CapturaDeDatosServlet extends HttpServlet {
                     partidoDao.insertar(nuevo);
                 }
             }
+
+            // =========================================
+            // SOBRANTE IMPAR EN LOSERS
+            // =========================================
+            if (j < disponiblesLosers.size()
+                    && !hayPendientesLosers) {
+
+                int sobranteLosers = disponiblesLosers.get(j);
+
+                darByeSiCorresponde(
+                        sobranteLosers,
+                        "LOSERS",
+                        siguienteRonda,
+                        idTorneo,
+                        totalActivosWinners,
+                        partidos
+                );
+            }
+
+        } else if (disponiblesLosers.size() == 1
+                && !hayPendientesLosers) {
+
+            // No hay con quien emparejar dentro de LOSERS
+            int sobranteLosers = disponiblesLosers.get(0);
+
+            darByeSiCorresponde(
+                    sobranteLosers,
+                    "LOSERS",
+                    siguienteRonda,
+                    idTorneo,
+                    totalActivosWinners,
+                    partidos
+            );
         }
+    }
+
+    // =====================================================
+    // PROCESAR GRAN FINAL
+    // Decide si hace falta el partido de desempate
+    // (cuando el finalista de WINNERS pierde su primera
+    // derrota y queda empatado 1-1 contra el finalista
+    // de LOSERS).
+    // =====================================================
+    private void procesarGranFinal(Partido granFinal) {
+
+        int idTorneo = granFinal.getId_torneo();
+
+        int idGanador = granFinal.getGanador();
+
+        int idPerdedor = granFinal.getPerdedor();
+
+        if (idPerdedor == 0) {
+            return;
+        }
+
+        // =========================================
+        // VER ESTADO ACTUAL DEL PERDEDOR
+        // (ya se le sumo la derrota antes de llamar
+        // a este metodo, en el case "finalizarPartido")
+        // =========================================
+        Equipo equipoPerdedor = equipoDao.buscarPorId(idPerdedor);
+
+        if (equipoPerdedor == null) {
+            return;
+        }
+
+        // =========================================
+        // SI EL PERDEDOR YA QUEDO ELIMINADO
+        // significa que venia de LOSERS (1 derrota previa)
+        // y esta fue su 2da derrota -> el torneo TERMINA,
+        // no hace falta desempate
+        // =========================================
+        if ("ELIMINADO".equals(equipoPerdedor.getEstado())) {
+            return;
+        }
+
+        // =========================================
+        // EL PERDEDOR NO QUEDO ELIMINADO
+        // significa que venia de WINNERS con 0 derrotas
+        // y esta fue su PRIMERA derrota -> ahora ambos
+        // equipos tienen 1 derrota -> hace falta el
+        // partido de desempate (GRAN_FINAL_2)
+        // =========================================
+        boolean yaExiste = partidoDao.existePartidoPendiente(
+                idGanador,
+                idPerdedor,
+                idTorneo
+        );
+
+        if (yaExiste) {
+            return;
+        }
+
+        Partido desempate = new Partido();
+
+        desempate.setNombre("Gran Final - Desempate");
+
+        desempate.setEstado("PENDIENTE");
+
+        desempate.setPuntos_a(0);
+
+        desempate.setPuntos_b(0);
+
+        desempate.setFecha(
+                java.time.LocalDate.now().toString()
+        );
+
+        desempate.setBracket("GRAN_FINAL_2");
+
+        desempate.setRonda(granFinal.getRonda() + 1);
+
+        // El ganador de la Gran Final repite como equipo A
+        desempate.setId_equipo_a(idGanador);
+
+        // El que perdio (y quedo con 1 derrota) repite como equipo B
+        desempate.setId_equipo_b(idPerdedor);
+
+        desempate.setId_torneo(idTorneo);
+
+        partidoDao.insertar(desempate);
+    }
+
+    // =====================================================
+    // DAR BYE SI CORRESPONDE
+    // Un equipo se queda sin rival dentro de su propio
+    // bracket. Si el bracket CONTRARIO todavia tiene mas
+    // de 1 equipo activo, le damos BYE para que no se
+    // quede esperando y el torneo siga avanzando.
+    // Si el bracket contrario ya se redujo a 1 (o 0),
+    // NO le damos bye todavia, porque ya estamos a un
+    // paso de la Gran Final y hay que esperar a que
+    // se estabilice (la evaluamos en la siguiente llamada).
+    // =====================================================
+    private void darByeSiCorresponde(
+            int idEquipo,
+            String bracket,
+            int ronda,
+            int idTorneo,
+            int totalActivosBracketContrario,
+            List<Partido> partidos
+    ) {
+
+        if (totalActivosBracketContrario <= 1) {
+            return;
+        }
+
+        if (tieneByeEnRonda(partidos, bracket, ronda, idEquipo)) {
+            return;
+        }
+
+        Equipo eq = equipoDao.buscarPorId(idEquipo);
+
+        Partido bye = new Partido();
+
+        bye.setNombre(
+                (eq != null ? eq.getNombre() : "Equipo") + " - BYE"
+        );
+
+        bye.setEstado("FINALIZADO");
+
+        bye.setPuntos_a(0);
+
+        bye.setPuntos_b(0);
+
+        bye.setFecha(
+                java.time.LocalDate.now().toString()
+        );
+
+        bye.setBracket(bracket);
+
+        bye.setRonda(ronda);
+
+        bye.setId_equipo_a(idEquipo);
+
+        bye.setId_equipo_b(0);
+
+        bye.setId_torneo(idTorneo);
+
+        bye.setGanador(idEquipo);
+
+        bye.setPerdedor(0);
+
+        bye.setBye(true);
+
+        partidoDao.insertar(bye);
+    }
+
+    // =====================================================
+    // VERIFICAR SI YA EXISTE UN BYE PARA ESE EQUIPO
+    // EN ESE BRACKET Y RONDA (evita duplicados)
+    // =====================================================
+    private boolean tieneByeEnRonda(
+            List<Partido> partidos,
+            String bracket,
+            int ronda,
+            int idEquipo
+    ) {
+
+        for (Partido p : partidos) {
+
+            if (!p.isBye()) {
+                continue;
+            }
+
+            if (!bracket.equals(p.getBracket())) {
+                continue;
+            }
+
+            if (p.getRonda() != ronda) {
+                continue;
+            }
+
+            if (p.getId_equipo_a() == idEquipo) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

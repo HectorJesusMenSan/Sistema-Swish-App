@@ -8,18 +8,6 @@
 
     List<ClasificacionEquipo> clasificacion
             = (List<ClasificacionEquipo>) request.getAttribute("clasificacion");
-
-    // =========================================
-    // DESTINO DEL BOTON "VOLVER"
-    // Si se entro desde Ver Torneos, regresa ahi.
-    // Si no, regresa a la lista de partidos
-    // (comportamiento de siempre).
-    // =========================================
-    String origen = (String) request.getAttribute("origen");
-
-    String urlVolver = "torneos".equals(origen)
-            ? request.getContextPath() + "/TorneoServlet?accion=verTorneos"
-            : request.getContextPath() + "/PartidosServerlet";
 %>
 
 <!DOCTYPE html>
@@ -53,7 +41,7 @@
         ========================================== -->
         <div class="header-nav">
 
-            <a href="<%= urlVolver%>"
+            <a href="<%= request.getContextPath()%>/Serverlet"
                class="btn-nav-izq">
                 ← Volver
             </a>

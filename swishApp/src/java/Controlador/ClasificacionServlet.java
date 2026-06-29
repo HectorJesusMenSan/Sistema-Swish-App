@@ -52,8 +52,52 @@ public class ClasificacionServlet extends HttpServlet {
         PartidoDao partidoDao = new PartidoDao();
         JugadorDAO jugadorDao = new JugadorDAO();
 
-        List<Equipo> equipos = equipoDao.listar();
-        List<Partido> partidos = partidoDao.listar();
+        // =========================================
+        // OBTENER TORNEO A CONSULTAR
+        // Prioridad: parametro idTorneo en la URL
+        // (torneos historicos, ej. desde torneos.jsp)
+        // Respaldo: torneo activo guardado en sesion
+        // (flujo normal desde partidos.jsp)
+        // =========================================
+        Integer idTorneo = null;
+
+        String idTorneoParam = request.getParameter("idTorneo");
+
+        if (idTorneoParam != null && !idTorneoParam.isEmpty()) {
+
+            try {
+
+                idTorneo = Integer.parseInt(idTorneoParam);
+
+            } catch (NumberFormatException ex) {
+
+                idTorneo = null;
+            }
+        }
+
+        if (idTorneo == null) {
+
+            idTorneo = (Integer) request.getSession()
+                    .getAttribute("idTorneoActivo");
+        }
+
+        if (idTorneo == null) {
+            idTorneo = 0;
+        }
+
+        // =========================================
+        // ORIGEN DE LA NAVEGACION
+        // Sirve para que el boton "Volver" en
+        // estadisticas.jsp sepa a donde regresar
+        // (ej: "torneos" -> TorneoServlet,
+        //  null/otro -> PartidosServerlet)
+        // =========================================
+        String origen = request.getParameter("origen");
+
+        request.setAttribute("origen", origen);
+
+        List<Equipo> equipos = equipoDao.listarPorTorneo(idTorneo);
+        List<Partido> partidos = partidoDao.listarPorTorneo(idTorneo);
 
         List<ClasificacionEquipo> clasificacion = new ArrayList<>();
 
@@ -77,8 +121,8 @@ public class ClasificacionServlet extends HttpServlet {
                     continue;
                 }
 
-                boolean participa =
-                        p.getId_equipo_a() == equipo.getId()
+                boolean participa
+                        = p.getId_equipo_a() == equipo.getId()
                         || p.getId_equipo_b() == equipo.getId();
 
                 if (!participa) {
@@ -107,23 +151,23 @@ public class ClasificacionServlet extends HttpServlet {
                 }
             }
 
-            List<Jugador> jugadores =
-                    jugadorDao.listar_por_equipo(
+            List<Jugador> jugadores
+                    = jugadorDao.listar_por_equipo(
                             equipo.getId()
                     );
 
             try (
                     Connection con = Conexion.getConexion()) {
 
-                String sql =
-                        "SELECT SUM(faltas) total "
+                String sql
+                        = "SELECT SUM(faltas) total "
                         + "FROM estadisticas_por_partido "
                         + "WHERE id_jugador = ?";
 
                 for (Jugador j : jugadores) {
 
-                    PreparedStatement ps =
-                            con.prepareStatement(sql);
+                    PreparedStatement ps
+                            = con.prepareStatement(sql);
 
                     ps.setInt(1, j.getId());
 
@@ -154,12 +198,9 @@ public class ClasificacionServlet extends HttpServlet {
         }
 
         clasificacion.sort(
-                Comparator.comparingInt(
-                        ClasificacionEquipo::getVictorias
-                ).reversed()
-                        .thenComparingInt(
-                                ClasificacionEquipo::getDiferencia
-                        ).reversed()
+                Comparator.comparingInt(ClasificacionEquipo::getVictorias)
+                        .thenComparingInt(ClasificacionEquipo::getDiferencia)
+                        .reversed()
         );
 
         if (!clasificacion.isEmpty()) {

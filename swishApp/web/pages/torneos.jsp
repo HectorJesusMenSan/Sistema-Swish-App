@@ -97,8 +97,8 @@
 
                     <% if ("FINALIZADO".equals(t.getEstado())) {%>
 
-                    <!-- VER RANKING -->
-                    <a href="<%= request.getContextPath()%>/RankingServlet?accion=verRanking&idTorneo=<%= t.getId()%>"
+                    <!-- VER ESTADÍSTICAS -->
+                    <a href="<%= request.getContextPath()%>/ClasificacionServlet?accion=verClasificacion&idTorneo=<%= t.getId()%>&origen=torneos"
                        class="btn btn-estadisticas w-100">
 
                         VER ESTADÍSTICAS

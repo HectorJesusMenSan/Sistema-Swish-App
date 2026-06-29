@@ -32,6 +32,7 @@
         <link rel="stylesheet" href="CSS/components.css">
         <link rel="stylesheet" href="CSS/layout.css">
         <link rel="stylesheet" href="CSS/index.css">
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/CSS/headerNav.css">
 
     </head>
 
@@ -40,15 +41,26 @@
         <!-- ======================================================
              🔹 HEADER (parte superior de la app)
         ====================================================== -->
+        
 
-        <header id="header_main" class="text-center">
+        <div class="header-nav">
 
+            <a href="<%= request.getContextPath()%>/PerfilServlet"
+               class="btn-nav-izq">
+                👤 Perfil
+            </a>
 
-        <!-- título principal -->
-        <h2 id="titulo_principal">Gestión de Torneos</h2>
-        <h4>"Para pueblos regionales de Oaxaca"</h4>
+            <span class="header-nav-titulo">Gestion de Torneos</span>
 
-        </header>
+            <form action="<%= request.getContextPath()%>/PerfilServlet"
+                  method="post" class="form-nav">
+                <input type="hidden" name="accion" value="cerrarSesion">
+                <button type="submit" class="btn-nav-der">
+                    Cerrar sesión
+                </button>
+            </form>
+
+        </div>
 
         <!-- ======================================================
              🔹 CONTENIDO PRINCIPAL

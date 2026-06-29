@@ -8,6 +8,8 @@ import Modelo.RankingJugador;
 
 import Modelo.Dao.EquipoDao;
 import Modelo.Dao.JugadorDAO;
+import Modelo.Partido;
+import Modelo.Dao.PartidoDao;
 
 import java.io.IOException;
 
@@ -103,23 +105,23 @@ public class RankingServlet extends HttpServlet {
                 // =====================================
                 // ESTADISTICAS TOTALES
                 // =====================================
-                String sql
-                        = """
-                        SELECT
-                            COALESCE(SUM(puntos),0) puntos,
-                            COALESCE(SUM(faltas),0) faltas,
-                            COUNT(*) partidos
-                        FROM estadisticas_por_partido
-                        WHERE id_jugador = ?
-                        """;
+                    String sql
+                        = "SELECT "
+                        + "COALESCE(SUM(e.puntos),0) puntos, "
+                        + "COALESCE(SUM(e.faltas),0) faltas, "
+                        + "COUNT(*) partidos "
+                        + "FROM estadisticas_por_partido e "
+                        + "INNER JOIN partido p ON e.id_partido = p.id "
+                        + "WHERE e.id_jugador = ? "
+                        + "AND p.id_torneo = ?";
 
-                PreparedStatement ps
-                        = con.prepareStatement(sql);
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, jugador.getId());
+                ps.setInt(2, idTorneoSesion != null ? idTorneoSesion : 0);
 
                 ps.setInt(1, jugador.getId());
 
-                ResultSet rs
-                        = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
 
                 int puntos = 0;
                 int faltas = 0;
@@ -154,25 +156,18 @@ public class RankingServlet extends HttpServlet {
                 // MEJOR PARTIDO DEL JUGADOR
                 // =====================================
                 String sqlMejorPartido
-                        = """
-                        SELECT
-                            id_partido,
-                            puntos
-                        FROM estadisticas_por_partido
-                        WHERE id_jugador = ?
-                        ORDER BY puntos DESC
-                        LIMIT 1
-                        """;
+                        = "SELECT e.id_partido, e.puntos "
+                        + "FROM estadisticas_por_partido e "
+                        + "INNER JOIN partido p ON e.id_partido = p.id "
+                        + "WHERE e.id_jugador = ? "
+                        + "AND p.id_torneo = ? "
+                        + "ORDER BY e.puntos DESC "
+                        + "LIMIT 1";
 
-                PreparedStatement ps2
-                        = con.prepareStatement(
-                                sqlMejorPartido
-                        );
+                PreparedStatement ps2 = con.prepareStatement(sqlMejorPartido);
+                ps2.setInt(1, jugador.getId());
+                ps2.setInt(2, idTorneoSesion != null ? idTorneoSesion : 0);
 
-                ps2.setInt(
-                        1,
-                        jugador.getId()
-                );
 
                 ResultSet rs2
                         = ps2.executeQuery();
@@ -228,15 +223,34 @@ public class RankingServlet extends HttpServlet {
             );
         }
 
-        request.setAttribute(
-                "mvp",
-                mvp
-        );
+        request.setAttribute("mvp", mvp);
+        request.setAttribute("ranking", top10);
 
-        request.setAttribute(
-                "ranking",
-                top10
-        );
+// Construir texto del mejor partido del MVP
+        if (mvp != null && mvp.getMejorPartido() > 0) {
+
+            PartidoDao partidoDao = new PartidoDao();
+            EquipoDao equipoDao1;
+            equipoDao1 = new EquipoDao();
+
+            Partido mejorP = partidoDao.buscarPorId(
+                    mvp.getMejorPartido()
+            );
+
+            if (mejorP != null && mejorP.getId() > 0) {
+
+                Equipo eqA = equipoDao1.buscarPorId(mejorP.getId_equipo_a());
+                Equipo eqB = equipoDao1.buscarPorId(mejorP.getId_equipo_b());
+
+                String textoMejorPartido
+                        = (eqA != null ? eqA.getNombre() : "?")
+                        + " vs "
+                        + (eqB != null ? eqB.getNombre() : "?")
+                        + " — " + mvp.getMejorPartidoPuntos() + " pts";
+
+                request.setAttribute("mejorPartido", textoMejorPartido);
+            }
+        }
 
         request.getRequestDispatcher(
                 "/pages/rankingMVP.jsp"

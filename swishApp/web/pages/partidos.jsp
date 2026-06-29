@@ -48,23 +48,26 @@
         <!-- =========================================
              HEADER
         ========================================== -->
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/CSS/headerNav.css">
 
-        <header id="header_torneo"
-                class="text-center py-4">
+        <div class="header-nav">
 
-            <h2 id="titulo_torneo">
+            <a href="<%= request.getContextPath()%>/PerfilServlet"
+               class="btn-nav-izq">
+                👤 Perfil
+            </a>
 
-                Gráfica del Torneo
+            <span class="header-nav-titulo">Lista de Partidos</span>
 
-            </h2>
+            <form action="<%= request.getContextPath()%>/PerfilServlet"
+                  method="post" class="form-nav">
+                <input type="hidden" name="accion" value="cerrarSesion">
+                <button type="submit" class="btn-nav-der">
+                    Cerrar sesión
+                </button>
+            </form>
 
-            <p id="subtitulo_torneo">
-
-                Avance de partidos
-
-            </p>
-
-        </header>
+        </div>
 
         <!-- =========================================
              CONTENIDO
@@ -88,20 +91,20 @@
 
                     for (Partido p : listaPartidos) {
 
-                            // Ocultar partidos BYE
-                            if (p.getId_equipo_b() == 0) {
-                                continue;
-                            }
+                        // Ocultar partidos BYE
+                        if (p.getId_equipo_b() == 0) {
+                            continue;
+                        }
 
-                            Equipo equipoA
-                                    = equipoDao.buscarPorId(
-                                            p.getId_equipo_a()
-                                    );
+                        Equipo equipoA
+                                = equipoDao.buscarPorId(
+                                        p.getId_equipo_a()
+                                );
 
-                            Equipo equipoB
-                                    = equipoDao.buscarPorId(
-                                            p.getId_equipo_b()
-                                    );
+                        Equipo equipoB
+                                = equipoDao.buscarPorId(
+                                        p.getId_equipo_b()
+                                );
             %>
 
             <!-- PARTIDO -->
@@ -229,20 +232,41 @@
             <%
                 }
             %>
-            
+
             <%
-                // Verificar si la Gran Final está finalizada
+                // =========================================
+                // VERIFICAR SI EL TORNEO REALMENTE TERMINÓ
+                // (considerando el posible desempate GRAN_FINAL_2)
+                // =========================================
                 boolean granFinalFinalizada = false;
+                boolean existeGranFinal2 = false;
 
                 if (listaPartidos != null) {
 
                     for (Partido p : listaPartidos) {
 
-                        if ("GRAN_FINAL".equals(p.getBracket())
-                                && "FINALIZADO".equals(p.getEstado())) {
+                        if ("GRAN_FINAL_2".equals(p.getBracket())) {
 
-                            granFinalFinalizada = true;
-                            break;
+                            existeGranFinal2 = true;
+
+                            if ("FINALIZADO".equals(p.getEstado())) {
+                                granFinalFinalizada = true;
+                            }
+                        }
+                    }
+
+                    // Solo si NO hubo desempate, basta con que
+                    // la Gran Final normal haya terminado
+                    if (!existeGranFinal2) {
+
+                        for (Partido p : listaPartidos) {
+
+                            if ("GRAN_FINAL".equals(p.getBracket())
+                                    && "FINALIZADO".equals(p.getEstado())) {
+
+                                granFinalFinalizada = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -284,28 +308,7 @@
              NAVBAR
         ========================================== -->
 
-        <footer id="nav_app"
-                class="d-flex justify-content-around align-items-center">
 
-            <div class="nav-item active">
-
-                PARTIVOS
-
-            </div>
-
-            <div class="nav-item">
-
-                ESTADÍSTICAS
-
-            </div>
-
-            <div class="nav-item">
-
-                RANKING
-
-            </div>
-
-        </footer>
 
     </body>
 
