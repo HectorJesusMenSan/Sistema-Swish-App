@@ -1,0 +1,48 @@
+/* ======================================================
+   🔹 ESTADISTICAS.CSS - CLASIFICACIÓN Y ESTADÍSTICAS
+   ======================================================
+   Estilos específicos para la página de estadísticas
+   y clasificación del torneo.
+====================================================== */
+
+/* Espaciado específico para esta página */
+#header_clasificacion {
+    margin-bottom: 1rem;
+}
+
+/* Ajustes para la tabla en móvil */
+@media (max-width: 768px) {
+    #tabla_equipos th,
+    #tabla_equipos td {
+        font-size: 0.75rem;
+        padding: 0.5rem;
+    }
+}
+
+/* Números de diferencia positivos y negativos */
+.dif-positivo {
+    color: var(--color-principal);
+}
+
+.dif-negativo {
+    color: #ff4444;
+}
+
+/* Ajuste para el equipo destacado */
+#equipo_destacado {
+    margin-bottom: 1rem;
+}
+
+.btn-estadisticas {
+    background-color: #2e86de;
+    color: white;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 12px;
+    border: none;
+}
+
+.btn-estadisticas:hover {
+    background-color: #1a6dbf;
+    color: white;
+}

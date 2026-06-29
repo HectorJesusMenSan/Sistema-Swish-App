@@ -1,0 +1,142 @@
+/* ======================================================
+   🔹 LAYOUT.CSS - HEADER, FOOTER Y ESTRUCTURA
+   ======================================================
+   Este archivo contiene la estructura principal de la app:
+   headers, footers, navegación y contenedores.
+====================================================== */
+
+/* ======================================================
+   🔹 1. HEADER PRINCIPAL
+   ======================================================
+   Estilos para la parte superior de todas las pantallas.
+====================================================== */
+#header_main {
+    text-align: center;
+    padding: 7rem;
+}
+
+#titulo_principal {
+    font-weight: bold;
+}
+
+#subtitulo {
+    color: var(--color-texto-secundario);
+}
+
+/* Header específico para captura de datos */
+#header_partido {
+    background: #121212 !important;
+    border-bottom: 1px solid #2a2a2a;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* Header específico para clasificación */
+#header_clasificacion {
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Header para torneo/partidos */
+#header_torneo {
+    border-bottom: 1px solid #2a2a2a;
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+#titulo_torneo {
+    color: var(--color-principal);
+    font-weight: 800;
+}
+
+#subtitulo_torneo {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* ======================================================
+   🔹 2. NAVBAR INFERIOR (APP MÓVIL)
+   ======================================================
+   Barra de navegación fija en la parte inferior.
+====================================================== */
+#nav_app {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(28,28,28,0.8);
+    border-top: 1px solid var(--color-borde);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+}
+
+.nav-item {
+    color: var(--color-texto-secundario);
+    font-size: 0.8rem;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.nav-item.active {
+    color: var(--color-principal);
+    font-weight: bold;
+}
+
+.nav-item:hover {
+    color: var(--color-principal-hover);
+}
+
+/* ======================================================
+   🔹 3. FOOTER DE PARTIDO
+   ======================================================
+====================================================== */
+#footer_partido {
+    background: #121212 !important;
+    border-top: 1px solid #2a2a2a;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 1rem;
+    z-index: 100;
+}
+
+/* ======================================================
+   🔹 4. CONTENEDORES PRINCIPALES
+   ======================================================
+====================================================== */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+main {
+    padding-bottom: 80px; /* Espacio para el footer fijo */
+}
+
+/* ======================================================
+   🔹 5. MARCOS Y TEXTOS DE PARTIDO
+   ======================================================
+====================================================== */
+#marcador {
+    color: var(--color-principal) !important;
+    font-weight: 800;
+    margin: 0;
+}
+
+#equipos {
+    color: #888;
+}
+
+#ronda {
+    color: var(--color-principal);
+}

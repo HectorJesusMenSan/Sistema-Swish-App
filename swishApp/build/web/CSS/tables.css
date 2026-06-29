@@ -1,0 +1,273 @@
+/* ======================================================
+   🔹 TABLES.CSS - TABLAS, RANKING Y ESTADÍSTICAS
+   ======================================================
+   Este archivo contiene todos los estilos relacionados
+   con tablas de clasificación, ranking de jugadores, etc.
+====================================================== */
+
+/* ======================================================
+   🔹 1. TABLAS DE CLASIFICACIÓN
+   ======================================================
+====================================================== */
+#tabla_equipos,
+.table,
+.table-striped,
+.table-hover {
+    background-color: var(--color-bg-secundario) !important;
+    color: white !important;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tabla_equipos thead,
+.table thead {
+    background-color: var(--color-bg-tabla) !important;
+}
+
+#tabla_equipos th,
+#tabla_equipos td,
+.table th,
+.table td {
+    background-color: var(--color-bg-secundario) !important;
+    color: white !important;
+    border-color: #333 !important;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+#tabla_equipos tbody tr,
+.table tbody tr {
+    background-color: var(--color-bg-secundario) !important;
+    transition: 0.3s;
+}
+
+#tabla_equipos tbody tr:hover,
+.table tbody tr:hover {
+    background: rgba(244,123,37,0.08) !important;
+    transform: scale(1.01);
+}
+
+/* Fila líder en tabla */
+.fila-lider {
+    background: rgba(244,123,37,0.08) !important;
+    border-left: 4px solid var(--color-principal);
+}
+
+/* ======================================================
+   🔹 2. RANKING MVP
+   ======================================================
+====================================================== */
+#ranking_destacado {
+    position: relative;
+    border-radius: 20px;
+    background: rgba(28,28,28,0.6);
+    backdrop-filter: blur(12px);
+    padding: 1rem;
+    margin: 1rem;
+}
+
+#ranking_header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#foto_mvp {
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
+    border-radius: 50%;
+    border: 2px solid var(--color-principal);
+    background: rgba(244, 123, 37, 0.2);
+    color: #f47b25;
+    font-weight: bold;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#nombre_mvp {
+    font-weight: bold;
+}
+
+#equipo_mvp {
+    font-size: 0.8rem;
+    color: var(--color-texto-secundario);
+}
+
+.label-top {
+    font-size: 0.7rem;
+    color: var(--color-principal);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Estadísticas MVP (cuadrícula de 4 columnas) */
+#stats_mvp {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.stat-mini {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.stat-mini:hover {
+    border-color: var(--color-principal);
+}
+
+.stat-mini span {
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: block;
+}
+
+.stat-mini p {
+    margin: 0;
+    font-size: 0.7rem;
+    color: var(--color-texto-secundario);
+}
+
+/* ======================================================
+   🔹 3. TABLA DE RANKING NUEVA (Estilo personalizado)
+   ======================================================
+====================================================== */
+#tabla_ranking_nuevo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fila {
+    display: grid;
+    grid-template-columns: 30px 1fr 50px 50px;
+    background: rgba(28,28,28,0.6);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--color-borde);
+    backdrop-filter: blur(8px);
+    transition: 0.2s;
+    align-items: center;
+}
+
+.fila:hover {
+    border-color: var(--color-principal);
+    transform: scale(1.01);
+}
+
+.fila.encabezado {
+    background: transparent;
+    border: none;
+    color: var(--color-texto-secundario);
+    font-weight: bold;
+}
+
+.fila.lider {
+    border: 1px solid var(--color-principal);
+}
+
+/* ======================================================
+   🔹 4. EQUIPO DESTACADO (TARJETA LÍDER)
+   ======================================================
+====================================================== */
+#equipo_destacado {
+    background: var(--color-bg-secundario);
+    border-radius: 20px;
+    border: 1px solid #333;
+    padding: 25px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0,0,0,0.6);
+}
+
+/* Efecto brillo naranja */
+#equipo_destacado::after {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 150px;
+    height: 150px;
+    background: rgba(244,123,37,0.1);
+    border-radius: 50%;
+    filter: blur(40px);
+}
+
+#label_lider {
+    font-size: 0.8rem;
+    color: var(--color-texto-secundario);
+    letter-spacing: 1px;
+}
+
+#nombre_equipo_destacado {
+    margin-top: 0.5rem;
+}
+
+#icono_trofeo {
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+.stat-box {
+    text-align: center;
+}
+
+.stat-box span {
+    font-size: 1.3rem;
+    font-weight: bold;
+    display: block;
+}
+
+.stat-box p {
+    margin: 0;
+    font-size: 0.7rem;
+    color: var(--color-texto-secundario);
+}
+
+/* ======================================================
+   🔹 5. CRITERIO DE EVALUACIÓN
+   ======================================================
+====================================================== */
+#criterio_box {
+    background: var(--color-bg-secundario);
+    border-radius: 20px;
+    padding: 1.5rem;
+}
+
+#texto_criterio {
+    color: var(--color-texto-secundario);
+    margin-bottom: 1rem;
+}
+
+.criterio-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #333;
+}
+
+/* ======================================================
+   🔹 6. MEJOR PARTIDO
+   ======================================================
+====================================================== */
+#mejorPartido {
+    margin: 1rem;
+    padding: 1rem;
+}
+
+#mejorPartido h5 {
+    margin-bottom: 0.5rem;
+}
+
+#mejorPartido p {
+    margin-bottom: 0.25rem;
+}
